@@ -1,12 +1,12 @@
 package model
 
 import (
+	"common/lib/keycrypt"
 	"fmt"
-	"s4s/common/lib/keycrypt"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 const ReadOnly = 1
@@ -27,12 +27,12 @@ func NewOrm(readOnly ...int) orm.Ormer {
 	return o
 }
 
-func InitMySQL(key string) (err error) {
-	username := beego.AppConfig.String("mysql::username")
-	password := beego.AppConfig.String("mysql::password")
-	addr := beego.AppConfig.String("mysql::addr")
-	addr_ro := beego.AppConfig.String("mysql::addr_ro")
-	dbname := beego.AppConfig.String("mysql::dbname")
+func InitPgSQL(key string) (err error) {
+	username := beego.AppConfig.String("pgsql::username")
+	password := beego.AppConfig.String("pgsql::password")
+	addr := beego.AppConfig.String("pgsql::addr")
+	addr_ro := beego.AppConfig.String("pgsql::addr_ro")
+	dbname := beego.AppConfig.String("pgsql::dbname")
 
 	if len(key) > 0 {
 		password, err = keycrypt.Decode(key, password)
@@ -41,19 +41,19 @@ func InitMySQL(key string) (err error) {
 		}
 	}
 
-	err = orm.RegisterDriver("mysql", orm.DRMySQL)
+	err = orm.RegisterDriver("postgres", orm.DRPostgres)
 	if err != nil {
 		return
 	}
-	err = orm.RegisterDataBase("default", "mysql",
-		fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
+	err = orm.RegisterDataBase("default", "postgres",
+		fmt.Sprintf("user=%s password=%s host=%s port=3432 dbname=%s sslmode=disable",
 			username, password, addr, dbname))
 	if err != nil {
 		return
 	}
 	if len(addr_ro) > 0 {
-		err = orm.RegisterDataBase(readOnlyDBName, "mysql",
-			fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
+		err = orm.RegisterDataBase(readOnlyDBName, "postgres",
+			fmt.Sprintf("user=%s password=%s host=%s port=3432 dbname=%s sslmode=disable",
 				username, password, addr_ro, dbname))
 		if err != nil {
 			return

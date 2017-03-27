@@ -11,7 +11,7 @@ import (
 
 var (
 	Version    = "unknow"
-	configPath = flag.String("c", "conf/stowage_user.conf", "config file path")
+	configPath = flag.String("c", "conf/stowage_web.conf", "config file path")
 )
 
 func main() {
