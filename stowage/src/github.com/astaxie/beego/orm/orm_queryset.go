@@ -14,7 +14,9 @@
 
 package orm
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type colValue struct {
 	value int64
@@ -147,14 +149,13 @@ func (o querySet) RelatedSel(params ...interface{}) QuerySeter {
 
 // set condition to QuerySeter.
 func (o querySet) SetCond(cond *Condition) QuerySeter {
-	if o.cond == nil {
-		o.cond = cond
-	} else {
-		if cond != nil {
-			o.cond.params = append(o.cond.params, cond.params...)
-		}
-	}
+	o.cond = cond
 	return &o
+}
+
+// get condition from QuerySeter
+func (o querySet) GetCond() *Condition {
+	return o.cond
 }
 
 // return QuerySeter execution result number
@@ -196,15 +197,17 @@ func (o *querySet) All(container interface{}, cols ...string) (int64, error) {
 // query one row data and map to containers.
 // cols means the columns when querying.
 func (o *querySet) One(container interface{}, cols ...string) error {
+	o.limit = 1
 	num, err := o.orm.alias.DbBaser.ReadBatch(o.orm.db, o, o.mi, o.cond, container, o.orm.alias.TZ, cols)
 	if err != nil {
 		return err
 	}
-	if num > 1 {
-		return ErrMultiRows
-	}
 	if num == 0 {
 		return ErrNoRows
+	}
+
+	if num > 1 {
+		return ErrMultiRows
 	}
 	return nil
 }

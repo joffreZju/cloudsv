@@ -136,9 +136,11 @@ type BeegoHTTPSettings struct {
 	TLSClientConfig  *tls.Config
 	Proxy            func(*http.Request) (*url.URL, error)
 	Transport        http.RoundTripper
+	CheckRedirect    func(req *http.Request, via []*http.Request) error
 	EnableCookie     bool
 	Gzip             bool
 	DumpBody         bool
+	Retries          int // if set to -1 means will retry forever
 }
 
 // BeegoHTTPRequest provides more useful methods for requesting one url than http.Request.
@@ -185,6 +187,15 @@ func (b *BeegoHTTPRequest) SetUserAgent(useragent string) *BeegoHTTPRequest {
 // Debug sets show debug or not when executing request.
 func (b *BeegoHTTPRequest) Debug(isdebug bool) *BeegoHTTPRequest {
 	b.setting.ShowDebug = isdebug
+	return b
+}
+
+// Retries sets Retries times.
+// default is 0 means no retried.
+// -1 means retried forever.
+// others means retried times.
+func (b *BeegoHTTPRequest) Retries(times int) *BeegoHTTPRequest {
+	b.setting.Retries = times
 	return b
 }
 
@@ -262,6 +273,15 @@ func (b *BeegoHTTPRequest) SetTransport(transport http.RoundTripper) *BeegoHTTPR
 // 	}
 func (b *BeegoHTTPRequest) SetProxy(proxy func(*http.Request) (*url.URL, error)) *BeegoHTTPRequest {
 	b.setting.Proxy = proxy
+	return b
+}
+
+// SetCheckRedirect specifies the policy for handling redirects.
+//
+// If CheckRedirect is nil, the Client uses its default policy,
+// which is to stop after 10 consecutive requests.
+func (b *BeegoHTTPRequest) SetCheckRedirect(redirect func(req *http.Request, via []*http.Request) error) *BeegoHTTPRequest {
+	b.setting.CheckRedirect = redirect
 	return b
 }
 
@@ -380,7 +400,7 @@ func (b *BeegoHTTPRequest) getResponse() (*http.Response, error) {
 }
 
 // DoRequest will do the client.Do
-func (b *BeegoHTTPRequest) DoRequest() (*http.Response, error) {
+func (b *BeegoHTTPRequest) DoRequest() (resp *http.Response, err error) {
 	var paramBody string
 	if len(b.params) > 0 {
 		var buf bytes.Buffer
@@ -409,9 +429,10 @@ func (b *BeegoHTTPRequest) DoRequest() (*http.Response, error) {
 	if trans == nil {
 		// create default transport
 		trans = &http.Transport{
-			TLSClientConfig: b.setting.TLSClientConfig,
-			Proxy:           b.setting.Proxy,
-			Dial:            TimeoutDialer(b.setting.ConnectTimeout, b.setting.ReadWriteTimeout),
+			TLSClientConfig:     b.setting.TLSClientConfig,
+			Proxy:               b.setting.Proxy,
+			Dial:                TimeoutDialer(b.setting.ConnectTimeout, b.setting.ReadWriteTimeout),
+			MaxIdleConnsPerHost: -1,
 		}
 	} else {
 		// if b.transport is *http.Transport then set the settings.
@@ -445,6 +466,10 @@ func (b *BeegoHTTPRequest) DoRequest() (*http.Response, error) {
 		b.req.Header.Set("User-Agent", b.setting.UserAgent)
 	}
 
+	if b.setting.CheckRedirect != nil {
+		client.CheckRedirect = b.setting.CheckRedirect
+	}
+
 	if b.setting.ShowDebug {
 		dump, err := httputil.DumpRequest(b.req, b.setting.DumpBody)
 		if err != nil {
@@ -452,7 +477,16 @@ func (b *BeegoHTTPRequest) DoRequest() (*http.Response, error) {
 		}
 		b.dump = dump
 	}
-	return client.Do(b.req)
+	// retries default value is 0, it will run once.
+	// retries equal to -1, it will run forever until success
+	// retries is setted, it will retries fixed times.
+	for i := 0; b.setting.Retries == -1 || i <= b.setting.Retries; i++ {
+		resp, err = client.Do(b.req)
+		if err == nil {
+			break
+		}
+	}
+	return resp, err
 }
 
 // String returns the body string in response.

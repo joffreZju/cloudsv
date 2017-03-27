@@ -9,7 +9,7 @@ import (
 
 func LoadRouter() {
 	// aliyu 健康检测
-	beego.Router("/health", &maincontroller.Controller{}, "*:Check")
+	//beego.Router("/health", &maincontroller.Controller{}, "*:Check")
 	// user 相关
 	beego.Router("/v2/user/getcode", &user.Controller{}, "POST:GetCode")
 	beego.Router("/v2/user/login", &user.Controller{}, "POST:LoginUser")

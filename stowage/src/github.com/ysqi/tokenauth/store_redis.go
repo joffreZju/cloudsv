@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"s4s/common/lib/redis"
+	"common/lib/redis"
 	"strconv"
 )
 

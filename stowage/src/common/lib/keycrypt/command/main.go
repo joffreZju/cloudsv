@@ -1,9 +1,9 @@
 package main
 
 import (
+	"common/lib/keycrypt"
 	"flag"
 	"fmt"
-	"s4s/common/lib/keycrypt"
 )
 
 var (
@@ -12,13 +12,13 @@ var (
 	ciptertext = flag.String("d", "", "ciptertext")
 
 	helper = `
-s4skeycipter help
+keycipter help
 
 encode text
-	s4skeycipter -k "this is key" -e "this is plaintext"
+	keycipter -k "this is key" -e "this is plaintext"
 
 encode text
-	s4skeycipter -k "this is key" -d "this is ciptertext"
+	keycipter -k "this is key" -d "this is ciptertext"
 	`
 )
 

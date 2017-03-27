@@ -1,15 +1,14 @@
 package main
 
 import (
-	"common/filter"
+	//"common/filter"
 	"common/model"
 	"common/service"
 	"fmt"
 	"math/rand"
 	"os"
 	"runtime/pprof"
-	"s4s/common/lib/cache"
-	"s4s/common/lib/perfcounter"
+	//"common/lib/cache"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -33,22 +32,10 @@ func Init() (err error) {
 	// init tokenauth
 	tokenauth2beego.Init(key)
 
-	// init redis cache
-	err = cache.Init(key)
-	if err != nil {
-		beego.Error("init cache failed : ", err)
-		return
-	}
-	// init mysql
-	err = model.InitMySQL(key)
+	// init pgsql
+	err = model.InitPgSQL(key)
 	if err != nil {
 		beego.Error("init database failed : ", err)
-		return
-	}
-	// init perfcounter
-	err = perfcounter.Init()
-	if err != nil {
-		beego.Error("init perfcounter failed : ", err)
 		return
 	}
 
@@ -67,7 +54,7 @@ func Init() (err error) {
 }
 
 func InitLog() (err error) {
-	filter.LoadLogFilter()
+	//filter.LoadLogFilter()
 	typ := beego.AppConfig.String("log::type")
 	cons := beego.AppConfig.String("log::params")
 	return beego.SetLogger(typ, cons)

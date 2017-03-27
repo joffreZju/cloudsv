@@ -18,12 +18,12 @@
 package tokenauth2beego
 
 import (
+	"common/lib/keycrypt"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
-	"s4s/common/lib/keycrypt"
 	"strconv"
 	"strings"
 	"syscall"

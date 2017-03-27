@@ -1,14 +1,12 @@
 package model
 
 import (
-	"errors"
-	"fmt"
-	"hash/crc32"
-	"strconv"
-	"strings"
+	//"errors"
+	//"fmt"
+
 	"time"
 
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 )
 
 type User struct {
