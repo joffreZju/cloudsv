@@ -23,7 +23,7 @@ GoInstall() {
 	
 }
 
-((pos+=1)) ; bins[$pos]="stowage_user"
+((pos+=1)) ; bins[$pos]="stowage_web"
 
 for ((i=1; i<=${#bins[*]}; i++)) 
 do
