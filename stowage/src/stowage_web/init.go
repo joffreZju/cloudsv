@@ -1,7 +1,9 @@
 package main
 
 import (
-	//"common/filter"
+	"common/filter"
+	"common/lib/cache"
+	"common/lib/push"
 	"common/model"
 	"common/service"
 	"fmt"
@@ -32,6 +34,16 @@ func Init() (err error) {
 	// init tokenauth
 	tokenauth2beego.Init(key)
 
+	// init redis cache
+	err = cache.Init(key)
+	if err != nil {
+		beego.Error("init cache failed : ", err)
+		return
+	}
+
+	// init push
+	err = push.Init()
+
 	// init pgsql
 	err = model.InitPgSQL(key)
 	if err != nil {
@@ -54,7 +66,7 @@ func Init() (err error) {
 }
 
 func InitLog() (err error) {
-	//filter.LoadLogFilter()
+	filter.LoadLogFilter()
 	typ := beego.AppConfig.String("log::type")
 	cons := beego.AppConfig.String("log::params")
 	return beego.SetLogger(typ, cons)

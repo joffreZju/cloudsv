@@ -7,21 +7,20 @@ import (
 	"github.com/astaxie/beego"
 )
 
+const (
+	ExemptPrefix string = "/exempt"
+	UserPrefix   string = "/v2/user"
+)
+
 func LoadRouter() {
 	// aliyu 健康检测
 	//beego.Router("/health", &maincontroller.Controller{}, "*:Check")
 	// user 相关
-	beego.Router("/v2/user/getcode", &user.Controller{}, "POST:GetCode")
-	beego.Router("/v2/user/login", &user.Controller{}, "POST:LoginUser")
-	beego.Router("/v2/user/upload_pic", &user.Controller{}, "POST:UploadPic")
-	beego.Router("/v2/user/upload_report_pic", &user.Controller{}, "POST:UploadReportPic")
-	beego.Router("/v2/user/index", &user.Controller{}, "POST:UserIndex")
-	beego.Router("/user/index", &user.Controller{}, "*:UserIndex") //压测使用
-	beego.Router("/v2/user/info", &user.Controller{}, "POST:GetUserInfo")
-	beego.Router("/v2/user/edit_profile", &user.Controller{}, "POST:EditProfile")
-
-	// 静态文件
-	beego.SetStaticPath("/static", "../static")
+	beego.Router(ExemptPrefix+"/user/getcode", &user.Controller{}, "POST:GetCode")
+	beego.Router(ExemptPrefix+"/user/register", &user.Controller{}, "POST:UserRegister")
+	beego.Router(ExemptPrefix+"/user/login", &user.Controller{}, "POST:UserLogin")
+	beego.Router(UserPrefix+"/info", &user.Controller{}, "POST:GetUserInfo")
+	beego.Router(UserPrefix+"/edit_profile", &user.Controller{}, "POST:EditProfile")
 
 	// 非登录态列表
 	notNeedAuthList := []string{

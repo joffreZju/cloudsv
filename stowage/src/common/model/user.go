@@ -4,6 +4,8 @@ import (
 	//"errors"
 	//"fmt"
 
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -13,7 +15,8 @@ type User struct {
 	Id         int       `orm:"auto;pk;column(id)" json:"-"` // 用户ID，表内自增
 	Uid        string    `orm:"unique"  json:"-"`
 	Tel        string    `orm:"unique" json:",omitempty"`
-	Password   string    `json:",omitempty"` // 密码
+	Password   string    `json:"-"`          // 密码
+	UserName   string    `json:",omitempty"` // 用户名
 	Icon       string    `json:",omitempty"`
 	Desc       string    `json:",omitempty"`
 	Gender     int8      `json:",omitempty"`
@@ -21,6 +24,7 @@ type User struct {
 	LoginTime  time.Time `orm:"type(datetime)" json:",omitempty"` //登录时间
 	CreateTime time.Time `orm:"type(datetime)" json:",omitempty"` //
 	Mail       string    `json:",omitempty"`
+	Referer    string    `json:",omitempty"`
 	RegisterID string    `json:",omitempty"` // 用于给用户推送消息
 	//Groups     []*Group  `orm:"-" json:",omitempty"` // 用户的所在组织
 }
@@ -37,8 +41,51 @@ func CreateUser(u *User) (err error) {
 	return
 }
 
-func UpdateUser(u *User) (err error) {
-	_, err = orm.NewOrm().Update(u)
+func UpdateUser(u *User, fields ...string) (err error) {
+	if len(fields) == 0 {
+		fields = append(fields, "Id", "Icon",
+			"Gender", "Desc", "Address", "LoginTime",
+			"Tel", "UserName", "Password", "Mail", "Referer")
+	}
+	sql := fmt.Sprintf("update user set PARAMS where id = ?")
+
+	params, values := "", []interface{}{}
+	for _, f := range fields {
+		switch f {
+		case "UserName":
+			params += " `user_name`= ? ,"
+			values = append(values, u.UserName)
+		case "Desc":
+			params += " `desc`= ? ,"
+			values = append(values, u.Desc)
+		case "Gender":
+			params += " `gender`= ? ,"
+			values = append(values, u.Gender)
+		case "Address":
+			params += " `address`= ? ,"
+			values = append(values, u.Address)
+		case "LoginTime":
+			params += " `login_time`= ? ,"
+			values = append(values, u.LoginTime)
+		case "Mail":
+			params += " `mail`= ? ,"
+			values = append(values, u.Mail)
+		case "PassWord":
+			params += " `pass_world`= ? ,"
+			values = append(values, u.Password)
+
+		}
+	}
+	if len(params) > 1 {
+		params = params[:len(params)-1]
+	}
+	sql = strings.Replace(sql, "PARAMS", params, 1)
+	fmt.Printf("---sql:%s\n", sql)
+	result, err := NewOrm().Raw(sql, values...).Exec()
+	if err != nil {
+		return
+	}
+	_, err = result.RowsAffected()
 	return
 }
 
@@ -58,6 +105,11 @@ func GetUserByTel(tel string) (u *User, err error) {
 	err = NewOrm(ReadOnly).QueryTable("User").Filter("Tel", tel).One(u)
 	return
 }
+
+/*
+func GetUsers(ids []int) (list []*User, err error) {
+
+}*/
 
 type Group struct {
 	Id         int    `orm:"auto;pk;"`

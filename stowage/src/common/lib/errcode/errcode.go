@@ -33,6 +33,7 @@ var (
 	ErrOurUserTelHasAlreadyRegisted = &CodeError{20008, "手机号已经注册,请登录"}
 	ErrGetOurUserByTelFailed        = &CodeError{20009, "未查询到用户请先联系管理员注册"}
 	ErrOurUserGetAuthFailed         = &CodeError{20010, "获取签名信息失败，请重试"}
+	ErrSendSMSMsgError              = &CodeError{20011, "发送短消息失败，请稍后重试"}
 	ErrAuthCreateFailed             = &CodeError{20101, "出问题了，稍后再试吧~"}
 	ErrAuthCheckFailed              = &CodeError{20102, "出问题了，稍后再试吧~"}
 	ErrAuthCodeError                = &CodeError{20103, "验证码错误"}

@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -91,4 +92,18 @@ func Decode(keyStr, ciphertextStr string) (plaintextStr string, err error) {
 
 	plaintextStr = strings.TrimSpace(string(ciphertext))
 	return
+}
+
+const salt string = "suanpeizai#@'hangzhou"
+
+func Sha256Cal(src string) []byte {
+	h := sha256.New()
+	h.Write([]byte(src + salt))
+	return h.Sum(nil)
+}
+func CheckSha256(src, dst string) bool {
+	h := sha256.New()
+	h.Write([]byte(src + salt))
+	v := h.Sum(nil)
+	return string(v) == dst
 }
