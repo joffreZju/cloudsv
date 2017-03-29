@@ -15,17 +15,17 @@ type User struct {
 	Id         int       `orm:"auto;pk;column(id)" json:"-"` // 用户ID，表内自增
 	Uid        string    `orm:"unique"  json:"-"`
 	Tel        string    `orm:"unique" json:",omitempty"`
-	Password   string    `json:"-"`          // 密码
-	UserName   string    `json:",omitempty"` // 用户名
-	Icon       string    `json:",omitempty"`
-	Desc       string    `json:",omitempty"`
-	Gender     int8      `json:",omitempty"`
-	Address    string    `json:",omitempty"`
-	LoginTime  time.Time `orm:"type(datetime)" json:",omitempty"` //登录时间
-	CreateTime time.Time `orm:"type(datetime)" json:",omitempty"` //
-	Mail       string    `json:",omitempty"`
-	Referer    string    `json:",omitempty"`
-	RegisterID string    `json:",omitempty"` // 用于给用户推送消息
+	Password   string    `json:"-"`                     // 密码
+	UserName   string    `orm:"null" json:",omitempty"` // 用户名
+	Icon       string    `orm:"null" json:",omitempty"`
+	Desc       string    `orm:"null" json:",omitempty"`
+	Gender     int8      `orm:"null" json:",omitempty"`
+	Address    string    `orm:"null" json:",omitempty"`
+	LoginTime  time.Time `orm:"type(datetime);null" json:",omitempty"` //登录时间
+	CreateTime time.Time `orm:"type(datetime)" json:",omitempty"`      //
+	Mail       string    `orm:"null" json:",omitempty"`
+	Referer    string    `orm:"null" json:",omitempty"`
+	RegisterID string    `orm:"null" json:",omitempty"` // 用于给用户推送消息
 	//Groups     []*Group  `orm:"-" json:",omitempty"` // 用户的所在组织
 }
 

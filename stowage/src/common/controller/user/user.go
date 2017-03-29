@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
+	"github.com/ysqi/tokenauth"
 	"github.com/ysqi/tokenauth2beego/o2o"
 )
 
@@ -29,12 +30,12 @@ func (c *Controller) UserRegister() {
 	mail := c.GetString("mail")
 	referer := c.GetString("referer")
 
-	passwdc := string(keycrypt.Sha256Cal(passwd))
-
+	passwdc := keycrypt.Sha256Cal(passwd)
+	beego.Debug("tel:", tel)
 	var code int
 	var err error
 	if code, err = strconv.Atoi(c.GetString("code")); err != nil {
-		beego.Error("user.LoginUser error:", err)
+		beego.Error("user.regist error:", err)
 		c.ReplyErr(errcode.ErrAuthCodeError)
 		return
 	}
@@ -47,13 +48,14 @@ func (c *Controller) UserRegister() {
 		return
 	} else {
 		u := model.User{
-			Tel:      tel,
-			Password: passwdc,
-			Desc:     desc,
-			Gender:   gender,
-			Address:  addr,
-			Mail:     mail,
-			Referer:  referer,
+			Tel:        tel,
+			Password:   passwdc,
+			Desc:       desc,
+			Gender:     gender,
+			Address:    addr,
+			Mail:       mail,
+			Referer:    referer,
+			CreateTime: time.Now(),
 		}
 		err := service.UserCreate(&u)
 		if err != nil {
@@ -120,6 +122,8 @@ func (c *Controller) UserLogin() {
 		c.ReplyErr(errcode.ErrAuthCreateFailed)
 		return
 	} else {
+		service.UserUpdate(user, "Logintime")
+
 		jsonstr := make(map[string]interface{})
 		jsonstr["Token"] = token.Value
 		jsonstr["User"] = user
@@ -127,6 +131,60 @@ func (c *Controller) UserLogin() {
 		return
 	}
 
+}
+func (c *Controller) LoginOut() {
+	token, err := o2o.Auth.CheckToken(c.Ctx.Request)
+	if err != nil {
+		beego.Error("o2o.Auth.CheckToken error:", err)
+		c.ReplySucc("OK")
+		return
+	}
+	err = tokenauth.Store.DeleteToken(token.Value)
+	if err != nil {
+		beego.Error("tokenauth.Store.DeleteToken:", err)
+	}
+	c.ReplySucc("OK")
+}
+func (c *Controller) Resetpwd() {
+	uid := (int)(c.UserID)
+	if uid == 0 {
+		uid, _ = c.GetInt("id")
+	}
+	user, err := service.GetUserInfo(uid)
+	if err != nil {
+		c.ReplyErr(err)
+		return
+	}
+	if len(user.Password) == 0 {
+		pwd := c.GetString("pwd")
+		pwd = keycrypt.Sha256Cal(pwd)
+		user.Password = pwd
+		err = service.UserUpdate(user, "Password")
+		if err != nil {
+			c.ReplyErr(err)
+			return
+		} else {
+			c.ReplySucc("OK")
+		}
+	} else {
+		owd := c.GetString("owd")
+		owd = keycrypt.Sha256Cal(owd)
+		if owd != user.Password {
+			err = errcode.ErrUserPasswordError
+			c.ReplyErr(err)
+			return
+		}
+		pwd := c.GetString("pwd")
+		pwd = keycrypt.Sha256Cal(pwd)
+		user.Password = pwd
+		err = service.UserUpdate(user, "Password")
+		if err != nil {
+			c.ReplyErr(err)
+			return
+		} else {
+			c.ReplySucc("OK")
+		}
+	}
 }
 
 func (c *Controller) GetCode() {

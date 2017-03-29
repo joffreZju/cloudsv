@@ -9,8 +9,10 @@ import (
 )
 
 func Init() (err error) {
-	alidayu.AppKey = "23441572"
-	alidayu.AppSecret = "8d890383b59c43ccdeb50fe9d0074087"
+	alidayu.AppKey = "LTAIwxFn7egYfvra"
+	//alidayu.AppKey = "23441572"
+	alidayu.AppSecret = "nBfpqo4StRZv9JreRsLQpFaZKKUT1h"
+	//alidayu.AppSecret = "8d890383b59c43ccdeb50fe9d0074087"
 	return
 }
 
