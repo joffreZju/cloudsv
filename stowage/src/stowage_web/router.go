@@ -1,6 +1,7 @@
 package main
 
 import (
+	"common/controller/common"
 	"common/controller/user"
 	"common/filter"
 
@@ -10,6 +11,7 @@ import (
 const (
 	ExemptPrefix string = "/exempt"
 	UserPrefix   string = "/v2/user"
+	CommonPrefix string = "/v2/common"
 )
 
 func LoadRouter() {
@@ -21,6 +23,13 @@ func LoadRouter() {
 	beego.Router(ExemptPrefix+"/user/login", &user.Controller{}, "POST:UserLogin")
 	beego.Router(UserPrefix+"/info", &user.Controller{}, "POST:GetUserInfo")
 	beego.Router(UserPrefix+"/edit_profile", &user.Controller{}, "POST:EditProfile")
+
+	//通用功能
+	beego.Router(CommonPrefix+"/upload_file", &common.Controller{}, "POST:UploadFile")    //文件上传
+	beego.Router(CommonPrefix+"/download_file", &common.Controller{}, "GET:DownloadFile") //文件下载
+
+	beego.Router(CommonPrefix+"/add_document", &common.Controller{}, "POST:AddDocument")      //文件上传
+	beego.Router(CommonPrefix+"/update_document", &common.Controller{}, "GET:UpdateDocument") //文件下载
 
 	// 非登录态列表
 	notNeedAuthList := []string{

@@ -31,6 +31,7 @@ func InitPgSQL(key string) (err error) {
 	username := beego.AppConfig.String("pgsql::username")
 	password := beego.AppConfig.String("pgsql::password")
 	addr := beego.AppConfig.String("pgsql::addr")
+	port := beego.AppConfig.String("pgsql::port")
 	addr_ro := beego.AppConfig.String("pgsql::addr_ro")
 	dbname := beego.AppConfig.String("pgsql::dbname")
 
@@ -47,15 +48,15 @@ func InitPgSQL(key string) (err error) {
 	}
 	beego.Debug(username, password, addr, dbname)
 	err = orm.RegisterDataBase("default", "postgres",
-		fmt.Sprintf("user=%s password=%s host=%s port=5432 dbname=%s sslmode=disable",
-			username, password, addr, dbname))
+		fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
+			username, password, addr, port, dbname))
 	if err != nil {
 		return
 	}
 	if len(addr_ro) > 0 {
 		err = orm.RegisterDataBase(readOnlyDBName, "postgres",
-			fmt.Sprintf("user=%s password=%s host=%s port=5432 dbname=%s sslmode=disable",
-				username, password, addr_ro, dbname))
+			fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
+				username, password, addr_ro, port, dbname))
 		if err != nil {
 			return
 		}
@@ -63,6 +64,8 @@ func InitPgSQL(key string) (err error) {
 	}
 
 	orm.RegisterModel(new(User))
+	orm.RegisterModel(new(File))
+	orm.RegisterModel(new(Document))
 	err = orm.RunSyncdb("default", false, true)
 
 	if beego.BConfig.RunMode != "prod" {

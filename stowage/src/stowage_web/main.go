@@ -16,7 +16,7 @@ var (
 
 func main() {
 	// 输出版本号
-	if len(os.Args) > 0 && os.Args[1] == "version" {
+	if len(os.Args) > 1 && os.Args[1] == "version" {
 		fmt.Println(Version)
 		os.Exit(0)
 	}
