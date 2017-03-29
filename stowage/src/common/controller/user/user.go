@@ -99,7 +99,7 @@ func (c *Controller) EditProfile() {
 }
 
 //用户登陆
-func (c *Controller) Login() {
+func (c *Controller) UserLogin() {
 	tel := c.GetString("tel")
 	passwd := c.GetString("password")
 	user, err := service.GetUserByTel(tel)

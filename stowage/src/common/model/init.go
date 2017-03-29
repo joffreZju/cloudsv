@@ -45,6 +45,7 @@ func InitPgSQL(key string) (err error) {
 	if err != nil {
 		return
 	}
+	beego.Debug(username, password, addr, dbname)
 	err = orm.RegisterDataBase("default", "postgres",
 		fmt.Sprintf("user=%s password=%s host=%s port=5432 dbname=%s sslmode=disable",
 			username, password, addr, dbname))
