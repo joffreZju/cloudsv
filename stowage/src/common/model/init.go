@@ -46,14 +46,14 @@ func InitPgSQL(key string) (err error) {
 		return
 	}
 	err = orm.RegisterDataBase("default", "postgres",
-		fmt.Sprintf("user=%s password=%s host=%s port=3432 dbname=%s sslmode=disable",
+		fmt.Sprintf("user=%s password=%s host=%s port=5432 dbname=%s sslmode=disable",
 			username, password, addr, dbname))
 	if err != nil {
 		return
 	}
 	if len(addr_ro) > 0 {
 		err = orm.RegisterDataBase(readOnlyDBName, "postgres",
-			fmt.Sprintf("user=%s password=%s host=%s port=3432 dbname=%s sslmode=disable",
+			fmt.Sprintf("user=%s password=%s host=%s port=5432 dbname=%s sslmode=disable",
 				username, password, addr_ro, dbname))
 		if err != nil {
 			return
