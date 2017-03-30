@@ -40,6 +40,8 @@ var (
 	ErrAuthCodeExpired              = &CodeError{20104, "验证码已经失效"}
 	ErrUserCodeHasAlreadyExited     = &CodeError{20106, "验证码已经发送，请60秒后重试"}
 	ErrUserPremissionError          = &CodeError{20107, "您没有足够的权限查看该数据！"}
+	ErrAgentCreatFailed             = &CodeError{20120, "新建代理商失败"}
+	ErrAgentNotExisted              = &CodeError{20121, "代理商不存在"}
 )
 
 func ParseError(err error) (code int, msg string) {

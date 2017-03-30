@@ -24,7 +24,7 @@ func main() {
 	// 加载配置文件
 	flag.Parse()
 	if len(*configPath) > 0 {
-		err := beego.LoadAppConfig("ini", fmt.Sprintf("../%s", *configPath))
+		err := beego.LoadAppConfig("ini", fmt.Sprintf("%s", *configPath))
 		if err != nil {
 			panic(err)
 		}

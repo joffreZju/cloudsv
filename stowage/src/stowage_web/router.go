@@ -1,6 +1,7 @@
 package main
 
 import (
+	"common/controller/agent"
 	"common/controller/common"
 	"common/controller/user"
 	"common/filter"
@@ -12,7 +13,7 @@ const (
 	ExemptPrefix string = "/exempt"
 	UserPrefix   string = "/v2/user"
 	CommonPrefix string = "/v2/common"
-	ManagePrefix string = "/v2/back"
+	ManagePrefix string = "/v2/admin"
 )
 
 func LoadRouter() {
@@ -23,8 +24,12 @@ func LoadRouter() {
 	beego.Router(ExemptPrefix+"/user/register", &user.Controller{}, "POST:UserRegister")
 	beego.Router(ExemptPrefix+"/user/login", &user.Controller{}, "POST:UserLogin")
 	beego.Router(UserPrefix+"/info", &user.Controller{}, "Get:GetUserInfo")
-	beego.Router(UserPrefix+"/passwd/reset", &user.Controller{}, "Post:Resetpwd")
+	beego.Router(UserPrefix+"/passwd/modify", &user.Controller{}, "POST:Resetpwd")
 	beego.Router(UserPrefix+"/edit_profile", &user.Controller{}, "POST:EditProfile")
+	beego.Router(ManagePrefix+"/agent/add", &agent.Controller{}, "POST:AgentCreate")
+	beego.Router(ManagePrefix+"/agent/modify", &agent.Controller{}, "POST:AgentModify")
+	beego.Router(ManagePrefix+"/agent/info", &agent.Controller{}, "Get:AgentGetInfo")
+	beego.Router(ManagePrefix+"/agent/list", &agent.Controller{}, "Get:AgentList")
 
 	//通用功能
 	beego.Router(CommonPrefix+"/upload_file", &common.Controller{}, "POST:UploadFile")    //文件上传
@@ -43,8 +48,8 @@ func LoadRouter() {
 
 	// add filter
 	// 请求合法性验证 这个要放在第一个
-	beego.InsertFilter("/v2/*", beego.BeforeRouter, filter.CheckRequestFilter())
+	//beego.InsertFilter("/v2/*", beego.BeforeRouter, filter.CheckRequestFilter())
 	//filter.AddURLCheckSeed("wxapp", "bFvKYrlnHdtSaaGk7B1t") // 添加URLCheckSeed
-	beego.InsertFilter("/*", beego.BeforeRouter, filter.CheckAuthFilter("stowage_user", notNeedAuthList))
+	beego.InsertFilter("/v2/*", beego.BeforeRouter, filter.CheckAuthFilter("stowage_user", notNeedAuthList))
 	beego.InsertFilter("/*", beego.BeforeRouter, filter.RequestFilter())
 }

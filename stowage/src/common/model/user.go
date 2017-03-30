@@ -11,19 +11,25 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+const (
+	TimeFormat = "2006-01-02 15:04:05"
+	DateFormat = "2006-01-02"
+)
+
 type User struct {
 	Id         int       `orm:"auto;pk;column(id)" json:"-"` // 用户ID，表内自增
-	Uid        string    `orm:"unique"  json:"-"`
+	Uid        string    `orm:"null"  json:"-"`
 	Tel        string    `orm:"unique" json:",omitempty"`
 	Password   string    `json:"-"`                     // 密码
 	UserName   string    `orm:"null" json:",omitempty"` // 用户名
 	Icon       string    `orm:"null" json:",omitempty"`
-	Desc       string    `orm:"null" json:",omitempty"`
+	Descp      string    `orm:"null" json:",omitempty"`
 	Gender     int8      `orm:"null" json:",omitempty"`
 	Address    string    `orm:"null" json:",omitempty"`
 	LoginTime  time.Time `orm:"type(datetime);null" json:",omitempty"` //登录时间
 	CreateTime time.Time `orm:"type(datetime)" json:",omitempty"`      //
 	Mail       string    `orm:"null" json:",omitempty"`
+	UserType   int       `orm:"default(1)" json:",omitempty"` //1 普通用户,2 代理商
 	Referer    string    `orm:"null" json:",omitempty"`
 	RegisterID string    `orm:"null" json:",omitempty"` // 用于给用户推送消息
 	//Groups     []*Group  `orm:"-" json:",omitempty"` // 用户的所在组织
@@ -40,47 +46,57 @@ func CreateUser(u *User) (err error) {
 	u.Id = int(id)
 	return
 }
+func CreateUserIfNotExist(u *User) (err error) {
+	u.CreateTime = time.Now()
+	_, id, err := orm.NewOrm().ReadOrCreate(u, "tel")
+	if err != nil {
+		return
+	}
+	u.Id = int(id)
+	return
+}
 
 func UpdateUser(u *User, fields ...string) (err error) {
 	if len(fields) == 0 {
 		fields = append(fields, "Id", "Icon",
-			"Gender", "Desc", "Address", "LoginTime",
+			"Gender", "Descp", "Address", "LoginTime",
 			"Tel", "UserName", "Password", "Mail", "Referer")
 	}
-	sql := fmt.Sprintf("update user set PARAMS where id = ?")
+	sql := fmt.Sprintf("update public.user set PARAMS where id = ?")
 
 	params, values := "", []interface{}{}
 	for _, f := range fields {
 		switch f {
 		case "UserName":
-			params += " `user_name`= ? ,"
+			params += " user_name= ? ,"
 			values = append(values, u.UserName)
-		case "Desc":
-			params += " `desc`= ? ,"
-			values = append(values, u.Desc)
+		case "Descp":
+			params += " descp= ? ,"
+			values = append(values, u.Descp)
 		case "Gender":
-			params += " `gender`= ? ,"
+			params += " gender= ? ,"
 			values = append(values, u.Gender)
 		case "Address":
-			params += " `address`= ? ,"
+			params += " address= ? ,"
 			values = append(values, u.Address)
 		case "LoginTime":
-			params += " `login_time`= ? ,"
-			values = append(values, u.LoginTime)
+			params += " login_time= ? ,"
+			values = append(values, time.Now().Format(TimeFormat))
 		case "Mail":
-			params += " `mail`= ? ,"
+			params += " mail= ? ,"
 			values = append(values, u.Mail)
-		case "PassWord":
-			params += " `pass_world`= ? ,"
+		case "Password":
+			params += " password= ? ,"
 			values = append(values, u.Password)
 
 		}
 	}
+	values = append(values, u.Id)
 	if len(params) > 1 {
 		params = params[:len(params)-1]
 	}
 	sql = strings.Replace(sql, "PARAMS", params, 1)
-	fmt.Printf("---sql:%s\n", sql)
+	fmt.Printf("---sql:%s\n--%s\n", sql, params)
 	result, err := NewOrm().Raw(sql, values...).Exec()
 	if err != nil {
 		return
@@ -116,7 +132,7 @@ type Group struct {
 	Gid        string `orm:"unique" json:"-"`
 	AdminId    int
 	Name       string
-	Desc       string
+	Descp      string
 	Users      []*GroupUser `orm:"rel(m2m)" json:",omitempty"`
 	CreateTime time.Time    `orm:"type(datetime)" json:",omitempty"` //
 }

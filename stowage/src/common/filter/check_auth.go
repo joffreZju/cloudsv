@@ -76,13 +76,13 @@ func CheckAuthFilter(group string, notNeedAuthList []string) beego.FilterFunc {
 
 	return func(ctx *context.Context) {
 		if token, err := o2o.Auth.CheckToken(ctx.Request); err != nil {
-			//beego.Debug("CheckAuthFilter notoken", noAuthMap[ctx.Request.URL.Path], ctx.Request.URL.Path)
+			beego.Debug("CheckAuthFilter notoken", noAuthMap[ctx.Request.URL.Path], ctx.Request.URL.Path)
 			if !noAuthMap[ctx.Request.URL.Path] {
 				beego.Debug(err.Error(), "token:", token)
 				o2o.Auth.ReturnFailueInfo(err, ctx)
 			}
 		} else {
-			//beego.Debug("CheckAuthFilter token", token)
+			beego.Debug("CheckAuthFilter token", token)
 			strs := strings.Split(token.SingleID, "_")
 			if len(strs) == 1 {
 				ctx.Request.Header.Add("uid", token.SingleID)

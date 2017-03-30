@@ -50,7 +50,7 @@ func (c *Controller) UserRegister() {
 		u := model.User{
 			Tel:        tel,
 			Password:   passwdc,
-			Desc:       desc,
+			Descp:      desc,
 			Gender:     gender,
 			Address:    addr,
 			Mail:       mail,
@@ -79,19 +79,19 @@ func (c *Controller) GetUserInfo() {
 
 func (c *Controller) EditProfile() {
 	gender, _ := c.GetInt8("gender")
-	username := c.GetString("userName")
-	desc := c.GetString("desc")
+	username := c.GetString("username")
+	descp := c.GetString("descp")
 	address := c.GetString("address")
 	id := int(c.UserID)
 	user := model.User{
 		Id:       id,
 		Gender:   gender,
-		Desc:     desc,
+		Descp:    descp,
 		UserName: username,
 		Address:  address,
 	}
 
-	err := service.UserUpdate(&user, "Gender", "UserName", "Desc", "Address")
+	err := service.UserUpdate(&user, "Gender", "UserName", "Descp", "Address")
 	if err != nil {
 		c.ReplyErr(err)
 		return
@@ -122,7 +122,7 @@ func (c *Controller) UserLogin() {
 		c.ReplyErr(errcode.ErrAuthCreateFailed)
 		return
 	} else {
-		service.UserUpdate(user, "Logintime")
+		service.UserUpdate(user, "LoginTime")
 
 		jsonstr := make(map[string]interface{})
 		jsonstr["Token"] = token.Value
@@ -156,7 +156,7 @@ func (c *Controller) Resetpwd() {
 		return
 	}
 	if len(user.Password) == 0 {
-		pwd := c.GetString("pwd")
+		pwd := c.GetString("password")
 		pwd = keycrypt.Sha256Cal(pwd)
 		user.Password = pwd
 		err = service.UserUpdate(user, "Password")
@@ -167,14 +167,14 @@ func (c *Controller) Resetpwd() {
 			c.ReplySucc("OK")
 		}
 	} else {
-		owd := c.GetString("owd")
+		owd := c.GetString("oldpassword")
 		owd = keycrypt.Sha256Cal(owd)
 		if owd != user.Password {
 			err = errcode.ErrUserPasswordError
 			c.ReplyErr(err)
 			return
 		}
-		pwd := c.GetString("pwd")
+		pwd := c.GetString("password")
 		pwd = keycrypt.Sha256Cal(pwd)
 		user.Password = pwd
 		err = service.UserUpdate(user, "Password")

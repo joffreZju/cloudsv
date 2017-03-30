@@ -32,8 +32,11 @@ func Init() (err error) {
 	}
 
 	// init tokenauth
-	tokenauth2beego.Init(key)
-
+	err = tokenauth2beego.Init(key)
+	if err != nil {
+		beego.Error("init token auth failed : ", err)
+		return
+	}
 	// init redis cache
 	err = cache.Init(key)
 	if err != nil {

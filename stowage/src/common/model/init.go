@@ -66,10 +66,14 @@ func InitPgSQL(key string) (err error) {
 	orm.RegisterModel(new(User))
 	orm.RegisterModel(new(File))
 	orm.RegisterModel(new(Document))
+	orm.RegisterModel(new(Agent))
 	err = orm.RunSyncdb("default", false, true)
 
 	if beego.BConfig.RunMode != "prod" {
 		orm.Debug = false
+	} else {
+		orm.Debug = true
+		//orm.DebugLog = orm.NewLog()
 	}
 
 	return
