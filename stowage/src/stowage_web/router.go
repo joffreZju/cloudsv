@@ -3,6 +3,7 @@ package main
 import (
 	"common/controller/agent"
 	"common/controller/common"
+	"common/controller/recharge"
 	"common/controller/user"
 	"common/filter"
 
@@ -30,6 +31,12 @@ func LoadRouter() {
 	beego.Router(ManagePrefix+"/agent/modify", &agent.Controller{}, "POST:AgentModify")
 	beego.Router(ManagePrefix+"/agent/info", &agent.Controller{}, "Get:AgentGetInfo")
 	beego.Router(ManagePrefix+"/agent/list", &agent.Controller{}, "Get:AgentList")
+	beego.Router(ManagePrefix+"/recharge/input", &recharge.Controller{}, "POST:RechargeCreate")
+	beego.Router(ManagePrefix+"/recharge/grant", &recharge.Controller{}, "POST:GrantReferer")
+	beego.Router(ManagePrefix+"/recharge/recycle", &recharge.Controller{}, "POST:RechargeRecycle")
+	beego.Router(UserPrefix+"/recharge/using", &recharge.Controller{}, "POST:RechargeUsing")
+	beego.Router(ManagePrefix+"/recharge/info", &recharge.Controller{}, "Get:RechargeInfo")
+	//beego.Router(ManagePrefix+"/recharge/", &recharge.Controller{}, "POST:RechargeInfo")
 
 	//通用功能
 	beego.Router(CommonPrefix+"/upload_file", &common.Controller{}, "POST:UploadFile")    //文件上传
