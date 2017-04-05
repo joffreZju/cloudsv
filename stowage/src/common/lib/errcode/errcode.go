@@ -42,6 +42,9 @@ var (
 	ErrUserPremissionError          = &CodeError{20107, "您没有足够的权限查看该数据！"}
 	ErrAgentCreatFailed             = &CodeError{20120, "新建代理商失败"}
 	ErrAgentNotExisted              = &CodeError{20121, "代理商不存在"}
+
+	ErrCreateOrderFailed       = &CodeError{20131, "创建订单失败"}
+	ErrCreateOrderStatusFailed = &CodeError{20132, "创建订单状态失败"}
 )
 
 func ParseError(err error) (code int, msg string) {

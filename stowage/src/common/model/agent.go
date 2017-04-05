@@ -24,6 +24,7 @@ func InsertAgent(a *Agent) (err error) {
 	a.Id = int(id)
 	return
 }
+
 func SetAgentStatus(a *Agent) (err error) {
 	_, err = orm.NewOrm().Update(a, "Status")
 	return err
@@ -47,6 +48,7 @@ func GetAgentInfo(id int) (a *Agent, err error) {
 	}
 	return
 }
+
 func GetAgentAll() (list []*Agent, err error) {
 	o := NewOrm(ReadOnly)
 	_, err = o.QueryTable("agent").All(&list)
