@@ -4,11 +4,11 @@ import (
 	"common/controller/account"
 	"common/controller/agent"
 	"common/controller/bill"
-	"common/controller/common"
 	"common/controller/order"
 	"common/controller/recharge"
 	"common/controller/user"
 	"common/filter"
+	"stowage/src/common/controller/doc"
 
 	"github.com/astaxie/beego"
 )
@@ -61,12 +61,14 @@ func LoadRouter() {
 	//账单
 	beego.Router(UserPrefix+"/bill/info", &bill.Controller{}, "Get:BillInfo")
 
-	//通用功能
-	beego.Router(CommonPrefix+"/upload_file", &common.Controller{}, "POST:UploadFile")    //文件上传
-	beego.Router(CommonPrefix+"/download_file", &common.Controller{}, "GET:DownloadFile") //文件下载
+	//文档
+	beego.Router(ManagePrefix+"/doc/add", &doc.Controller{}, "POST:AddDocument")        //文档上传
+	beego.Router(UserPrefix+"/doc/view", &doc.Controller{}, "GET:GetDocUsing")          //文档查看
+	beego.Router(ManagePrefix+"/doc/list", &doc.Controller{}, "GET:GetDocList")         //文档列表
+	beego.Router(ManagePrefix+"/doc/set_status", &doc.Controller{}, "Get:SetDocStatus") //文档列表
 
-	beego.Router(CommonPrefix+"/add_document", &common.Controller{}, "POST:AddDocument")      //文件上传
-	beego.Router(CommonPrefix+"/update_document", &common.Controller{}, "GET:UpdateDocument") //文件下载
+	beego.Router(UserPrefix+"/doc/file_add", &doc.Controller{}, "POST:AddFile")      //文件上传
+	beego.Router(UserPrefix+"/doc/file_down", &doc.Controller{}, "GET:FileDownload") //文件下载
 
 	// 非登录态列表
 	notNeedAuthList := []string{

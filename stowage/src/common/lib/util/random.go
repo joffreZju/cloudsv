@@ -18,3 +18,8 @@ func RandomByte16() string {
 	}
 	return hex.EncodeToString(code)
 }
+
+func UniqueRandom() string {
+	tm := time.Now().UnixNano()
+	tms := strconv.FormInt(tm, 10)
+}
