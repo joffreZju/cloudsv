@@ -8,7 +8,7 @@ import (
 
 type Agent struct {
 	Id          int `orm:"auto;pk;column(id)"` // 表内自增
-	Uid         int
+	Uid         int `orm:"unique"`
 	LicenseFile string
 	Status      int       `orm:"default(1)"` //1 正常，2 禁用
 	CreateTime  time.Time `orm:"auto_now_add;type(datetime)"`
@@ -35,10 +35,10 @@ func AgentUpdate(a *Agent) (err error) {
 	return err
 }
 
-func GetAgentInfo(id int) (a *Agent, err error) {
+func GetAgentInfo(uid int) (a *Agent, err error) {
 	o := NewOrm(ReadOnly)
 	a = new(Agent)
-	err = o.QueryTable("public.agent").Filter("id", id).One(&a)
+	err = o.QueryTable("agent").Filter("Uid", id).One(&a)
 	if err != nil {
 		return nil, err
 	}
@@ -53,5 +53,4 @@ func GetAgentAll() (list []*Agent, err error) {
 	o := NewOrm(ReadOnly)
 	_, err = o.QueryTable("agent").All(&list)
 	return
-
 }

@@ -1,6 +1,10 @@
 package model
 
-import "github.com/astaxie/beego/orm"
+import (
+	"time"
+
+	"github.com/astaxie/beego/orm"
+)
 
 const (
 	//PaidType
@@ -12,7 +16,7 @@ const (
 	OrderFinished    = 2 // 处理完成
 	OrderCanceled    = 3 // 取消
 
-	//status
+	//order status
 	YiUserOrder        = iota // 0 创建订单
 	YiCancel                  //取消
 	YiWaitPay                 //等待支付完成
@@ -22,8 +26,10 @@ const (
 	YiPayBackFinish           //推款成功
 
 	//order type
-	OrderStowage = 1
-	OrderTopup   = 2
+	OrderTopup   = 1
+	OrderStowage = 2
+	//sub type
+	ConsumeStowage = 1
 )
 
 type OrderStatus struct {
@@ -35,6 +41,7 @@ type OrderStatus struct {
 	User   *User  `orm:"null;rel(fk);"`
 }
 
+//用户平台内消费也存于此
 type Order struct {
 	Id            int `orm:"auto;pk"`
 	Orderid       string
@@ -48,31 +55,55 @@ type Order struct {
 	Desc          string `json:",omitempty"` //备注信息
 	Remark        string `json:",omitempty"` //附加信息
 	PaidBankType  string `json:",omitempty"` // 银行卡类型, 微信支付有
-	OrderType     int    `json:",omitempty"` //1.算配载 2.算路由 3.充值,
+	OrderType     int    `json:",omitempty"` //1.充值2.消费
+	SubType       int    `json:",omitempty"` //1.算配载 2.算路由
+	Time          string `json:",omitempty"` // 下单时间
 	User          *User  `orm:"-" json:",omitempty"`
 	Uid           int    `json:"-"`
 	Bill          *Bill  `orm:"reverse(one);column(bill_id)" json:",omitempty"`
-	Time          string `json:",omitempty"` // 下单时间
+	Agent         *Agent `orm:"rel(fk);null;column(agent_id)" json:",omitempty"`
 }
 
 func (o *Order) UpdateProcessStatus() {
 	if o == nil {
 		return
 	}
-	switch o.OrderType {
-	case OrderTopup:
-		if o.Status == YiUserOrder {
-			o.ProcessStatus = OrderWaitProcess
-		} else if o.Status == YiPaid {
-			o.ProcessStatus = OrderFinished
-		} else if o.Status == YiCancel {
-			o.ProcessStatus = OrderCanceled
-		} else {
-			o.ProcessStatus = OrderProcessing
-		}
-
+	if o.Status == YiUserOrder {
+		o.ProcessStatus = OrderWaitProcess
+	} else if o.Status == YiPaid {
+		o.ProcessStatus = OrderFinished
+	} else if o.Status == YiCancel {
+		o.ProcessStatus = OrderCanceled
+	} else {
+		o.ProcessStatus = OrderProcessing
 	}
+
 }
+
+func GetPaidOrderOfToday(aid int) (list []*Order, err error) {
+	day := time.Now().Format("2006-01-02")
+	start := day + " 00:00:00"
+	end := time.Now().Format("2006-01-02 15:04:05")
+	var tlist []*Order
+	o := NewOrm(ReadOnly)
+	_, err := o.QueryTable("Order").Filter("agent_id", aid).
+		Filter("Status", YiPaid).
+		Filter("Time__gte", start).
+		Filter("Time__lte", end).
+		OrderBy("Time").All(&tlist)
+	for _, l := range list {
+		l.User = &User{Id: l.Uid}
+	}
+	return
+}
+
+/*
+func GetUnhandleOrderList() (list []*Order, err error) {
+	var blist []*Order
+	o := NewOrm(ReadOnly)
+	_, err = o.QueryTable("Order").Filter("Status", YiUserOrder)
+
+}*/
 
 func CreateOrder(o *Order) (err error) {
 	if o != nil && o.User != nil && o.Uid == 0 {

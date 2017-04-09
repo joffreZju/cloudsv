@@ -4,6 +4,7 @@ import (
 	"common/controller/base"
 	"common/lib/errcode"
 	"common/lib/keycrypt"
+	"common/lib/util"
 	"common/model"
 	"common/service"
 
@@ -39,8 +40,19 @@ func (c *Controller) AgentCreate() {
 		c.ReplyErr(errcode.ErrAgentCreatFailed)
 		return
 	}
-	c.ReplySucc("success")
+	//同时建立代理商资金账户
+	ac := model.Account{
+		AccountNo: util.RandomByte16(),
+		Userid:    a.User.Id,
+		UserType:  2,
+		Status:    1,
+	}
+	err = service.CreateAccount(&a)
+	if err != nil {
+		beego.Error("create user account failed:", err)
+	}
 
+	c.ReplySucc("success")
 }
 
 //获取代理商列表
@@ -51,6 +63,19 @@ func (c *Controller) AgentList() {
 		return
 	}
 	c.ReplySucc(list)
+}
+
+//代理商获取客户列表
+func (c *Controller) AgentClinets() {
+	tel := c.GetString("tel")
+	users, err := service.AgentClients(tel)
+	if err != nil {
+		beego.Error("get agent clients failed:", err)
+		b.RePlyErr(err)
+		return
+	}
+	c.ReplySucc(users)
+	retuern
 }
 
 //获取代理商信息

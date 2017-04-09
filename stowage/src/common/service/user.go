@@ -3,9 +3,14 @@ package service
 import (
 	"common/lib/errcode"
 	"common/model"
+	"encoding/binary"
+	"encoding/hex"
+	"stowage/src/common/lib/util"
 
 	"github.com/astaxie/beego"
 )
+
+var seedu = "asdf1234&*();.,"
 
 func UserCreate(u *model.User) (err error) {
 	//TODO add uid
@@ -35,6 +40,7 @@ func GetUserByTel(tel string) (u *model.User, err error) {
 	}
 	return
 }
+
 func GetUserInfo(id int) (u *model.User, err error) {
 	u, err = model.GetUser(id)
 	if err != nil {
@@ -42,5 +48,12 @@ func GetUserInfo(id int) (u *model.User, err error) {
 		err = errcode.ErrGetUserInfoFailed
 		return
 	}
+	return
+}
+
+func GenUserNo(u *model.User) (no string, err error) {
+	bb := util.Md5Cal2Byte(u.Tel + seedu)
+	binary.LittleEndian.PutUint32(bb[12:], uint32(u.Id))
+	no = hex.EncodeToString(bb)
 	return
 }

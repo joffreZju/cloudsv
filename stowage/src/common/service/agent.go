@@ -3,14 +3,12 @@ package service
 import (
 	"common/lib/errcode"
 	"common/model"
-	"fmt"
 
 	"github.com/astaxie/beego"
 )
 
 func AgentCreate(a *model.Agent) (err error) {
 	err = model.CreateUserIfNotExist(a.User)
-	fmt.Printf("=========%+v=====%v\n", a.User, err)
 	a.Uid = a.User.Id
 	err = model.InsertAgent(a)
 	if err != nil {
@@ -21,3 +19,11 @@ func AgentCreate(a *model.Agent) (err error) {
 	return
 }
 func AgentSetStatus() {}
+
+func AgentClients(tel string) (users []*model.User, err error) {
+	users, err = model.GetUsersByReferer(tel)
+	if err != nil {
+		return
+	}
+	return
+}

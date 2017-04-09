@@ -10,9 +10,14 @@ func AccountCreate(a *model.Account) (err error) {
 	return model.AddAccount(a)
 }
 
+//获取个人账户
+func GetAccount(uid int) (a *Account, err error) {
+	return model.GetAccountByUserId(uid)
+}
+
 //个人充值，代理商收入
 func ChargeAccount(aid string, money int64) (err error) {
-	a, err := model.GetAccountByAccountid(aid)
+	a, err := model.GetAccountByAccountNo(aid)
 	if err != nil {
 		return err
 	}
@@ -24,7 +29,7 @@ func ChargeAccount(aid string, money int64) (err error) {
 
 //个人消费
 func DecreseAccount(aid string, money int64) (err error) {
-	a, err := model.GetAccountByAccountid(aid)
+	a, err := model.GetAccountByAccountNo(aid)
 	if err != nil {
 		return err
 	}
@@ -40,7 +45,7 @@ func DecreseAccount(aid string, money int64) (err error) {
 //提现,线下
 //TODO   加锁
 func WithdrawDeposit(aid string, money int64) (err error) {
-	a, err := model.GetAccountByAccountid(aid)
+	a, err := model.GetAccountByAccountNo(aid)
 	if err != nil {
 		return err
 	}

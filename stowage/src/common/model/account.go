@@ -4,8 +4,8 @@ import "github.com/astaxie/beego/orm"
 
 type Account struct {
 	Id        int    `orm:"pk;auto"`
-	Accountid string `orm:"unique"` //以手机号为id,目前等于userid
-	Userid    string //个人和企业id
+	AccountNo string `orm:"unique"` //
+	Userid    int    //个人和企业id
 	UserType  int    //1 个人，2代理商，3企业
 	Banlance  int64  //账户余额
 	Topup     int64  //充值金额,消费者
@@ -22,8 +22,9 @@ func AddAccount(a *Account) (err error) {
 	a.Id = int(id)
 	return
 }
-func CheckAccountExist(uid string) (b bool) {
-	count, err := orm.NewOrm().QueryTable("Account").Filter("Userid", uid).Count()
+
+func CheckAccountExist(uid int, tp int) (b bool) {
+	count, err := orm.NewOrm().QueryTable("Account").Filter("Userid", uid).Filter("UserType", tp).Count()
 	if err == nil && count > 0 {
 		b = true
 	}
@@ -31,9 +32,14 @@ func CheckAccountExist(uid string) (b bool) {
 	return
 }
 
-func GetAccountByAccountid(id string) (a *Account, err error) {
-	a = &Account{Accountid: id}
-	err = orm.NewOrm().Read(a, "Accountid")
+func GetAccountByAccountNo(no string) (a *Account, err error) {
+	a = &Account{AccountNo: no}
+	err = orm.NewOrm().Read(a, "AccountNo")
+	return
+}
+
+func GetAccountByUserId(id int) (a *Account, err error) {
+	err = orm.NewOrm().QueryTable("Account").Filter("Userid", id).One(a)
 	return
 }
 

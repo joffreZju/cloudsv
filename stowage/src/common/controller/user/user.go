@@ -5,6 +5,7 @@ import (
 	"common/lib/errcode"
 	"common/lib/keycrypt"
 	"common/lib/push"
+	"common/lib/util"
 	"common/model"
 	"common/service"
 	"fmt"
@@ -63,6 +64,19 @@ func (c *Controller) UserRegister() {
 			c.ReplyErr(errcode.ErrUserCreateFailed)
 			return
 		}
+
+		//同时创建个人账户
+		a := model.Account{
+			AccountNo: util.RandomByte16(),
+			Userid:    u.Id,
+			UserType:  1,
+			Status:    1,
+		}
+		err = service.CreateAccount(&a)
+		if err != nil {
+			beego.Error("create user account failed:", err)
+		}
+
 		c.ReplySucc("success")
 	}
 }

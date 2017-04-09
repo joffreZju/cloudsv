@@ -53,6 +53,11 @@ func CreateUserIfNotExist(u *User) (err error) {
 	return
 }
 
+func GetUsersByReferer(tel string) (list []*User, err error) {
+	_, err = NewOrm(ReadOnly).QueryTable("User").Filter("Referer", tel).All(&list)
+	return
+}
+
 func UpdateUser(u *User, fields ...string) (err error) {
 	if len(fields) == 0 {
 		fields = append(fields, "Id", "Icon",
