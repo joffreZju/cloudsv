@@ -1,5 +1,9 @@
 package service
 
+import (
+	"common/model"
+)
+
 //隐藏文档，启用文档
 func SetDocStatus(st, tp, did int) (err error) {
 	if st == model.DocUsing {
@@ -13,17 +17,17 @@ func SetDocStatus(st, tp, did int) (err error) {
 		Status: st,
 		Id:     did,
 	}
-	err = model.UpdateDocumnet(d, "Status")
+	err = model.UpdateDocument(d, "Status")
 	return
 }
 
-func NewDocument(d *Document) (err error) {
+func NewDocument(d *model.Document) (err error) {
 	model.SetDocHide(d.DocType)
-	err = model.CreateDocumnet(d)
+	err = model.CreateDocument(d)
 	return
 }
 
-func NewFile(f *File) (err error) {
+func NewFile(f *model.File) (err error) {
 	err = model.CreateFile(f)
 	return
 }

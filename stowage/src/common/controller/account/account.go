@@ -11,7 +11,7 @@ type Controller struct {
 
 //查看账户信息
 func (c *Controller) AccountInfo() {
-	uid := int(c.UserId)
+	uid := int(c.UserID)
 	account, err := service.GetAccount(uid)
 	if err != nil {
 		c.ReplyErr(err)

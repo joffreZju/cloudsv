@@ -27,7 +27,7 @@ type Document struct {
 	Id       int `orm:"auto;pk;column(id)"`
 	DocType  int
 	Uploader int    `json:",omitempty"`
-	Fileid   string `json:",omitempty"`
+	FileNo   string `json:",omitempty"`
 	Desc     string `orm:"null" json:",omitempty"`
 	Status   int    `json:",omitempty"`
 }
@@ -74,7 +74,7 @@ func CreateDocument(doc *Document) (err error) {
 	if err != nil {
 		return
 	}
-	doc.Id = id
+	doc.Id = int(id)
 	return
 }
 
@@ -92,7 +92,10 @@ func GetDocument(id int) (doc *Document, err error) {
 }
 
 func SetDocHide(tp int) (err error) {
-	_err = orm.NewOrm().QueryTable("Documnet").Filter("DocType", tp).Update("Status", DocHide)
+	_, err = orm.NewOrm().QueryTable("Documnet").Filter("DocType", tp).Update(orm.Params{
+		"Status": DocHide,
+	})
+
 	return
 }
 
@@ -103,7 +106,7 @@ func GetDocByType(tp int) (doc *Document, err error) {
 }
 
 func GetDocListByType(tp int) (docs *[]Document, err error) {
-	_, err = orm.NewOrm().QueryTable("Documnet").Fileter("DocType", Tp).All(&doc)
+	_, err = orm.NewOrm().QueryTable("Documnet").Filter("DocType", tp).All(&docs)
 	return
 }
 

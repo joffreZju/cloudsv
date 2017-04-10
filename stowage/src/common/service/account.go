@@ -11,7 +11,7 @@ func AccountCreate(a *model.Account) (err error) {
 }
 
 //获取个人账户
-func GetAccount(uid int) (a *Account, err error) {
+func GetAccount(uid int) (a *model.Account, err error) {
 	return model.GetAccountByUserId(uid)
 }
 

@@ -47,7 +47,7 @@ func (c *Controller) AgentCreate() {
 		UserType:  2,
 		Status:    1,
 	}
-	err = service.CreateAccount(&a)
+	err = service.AccountCreate(&ac)
 	if err != nil {
 		beego.Error("create user account failed:", err)
 	}
@@ -71,11 +71,10 @@ func (c *Controller) AgentClinets() {
 	users, err := service.AgentClients(tel)
 	if err != nil {
 		beego.Error("get agent clients failed:", err)
-		b.RePlyErr(err)
+		c.ReplyErr(err)
 		return
 	}
 	c.ReplySucc(users)
-	retuern
 }
 
 //获取代理商信息

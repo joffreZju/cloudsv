@@ -47,7 +47,7 @@ func GetOrderMoreDetail(order *model.Order, fields ...string) (err error) {
 	newFields := []string{}
 	for _, f := range fields {
 		if f == "User" {
-			uid := order.UId
+			uid := order.Uid
 			if uid == 0 {
 				uid = order.User.Id
 			}

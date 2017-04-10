@@ -110,8 +110,6 @@ func NewNonceString() string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(nonce)))
 }
 
-const ChinaTimeZoneOffset = 8 * 60 * 60 //Beijing(UTC+8:00)
-
 // NewTimestampString return
 func NewTimestampString() string {
 	return fmt.Sprintf("%d", time.Now().Unix()+ChinaTimeZoneOffset)

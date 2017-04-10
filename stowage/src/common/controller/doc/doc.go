@@ -2,10 +2,11 @@ package doc
 
 import (
 	"common/controller/base"
+	"common/lib/errcode"
+	"common/lib/util"
+	"common/model"
 	"common/service"
 	"io/ioutil"
-	"s4s/common/lib/errcode"
-	"stowage/src/common/lib/util"
 	"strings"
 	"time"
 
@@ -20,15 +21,15 @@ func (c *Controller) AddDocument() {
 	fno := c.GetString("fno")
 	desc := c.GetString("desc")
 	dtp, _ := c.GetInt("dtp")
-	uid := c.UserId
-	d := model.Documnet{
+	uid := c.UserID
+	d := model.Document{
 		DocType:  dtp,
-		Uploader: uid,
+		Uploader: int(uid),
 		FileNo:   fno,
 		Desc:     desc,
 		Status:   model.DocUsing,
 	}
-	err = service.NewDocument(&d)
+	err := service.NewDocument(&d)
 	if err != nil {
 		beego.Error("create documnet failed:", err)
 		c.ReplyErr(err)
@@ -47,7 +48,7 @@ func (c *Controller) SetDocStatus() {
 		c.ReplyErr(err)
 		return
 	}
-	c.ReplySucc(d)
+	c.ReplySucc("success")
 }
 
 func (c *Controller) GetDocList() {
@@ -92,12 +93,12 @@ func (c *Controller) AddFile() {
 	md5 := util.Md5Cal2String(data)
 	sz := len(data) / 1024
 	no := md5 + util.UniqueRandom()
-	file := File{
+	file := model.File{
 		Uid:    uid,
 		Name:   filename,
 		Size:   sz,
 		Md5:    md5,
-		Data:   data,
+		Data:   string(data),
 		FileNo: no,
 		Mime:   mime,
 	}

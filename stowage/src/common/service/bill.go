@@ -1,8 +1,8 @@
 package service
 
 import (
+	"common/lib/errcode"
 	"common/model"
-	"s4s/common/lib/errcode"
 
 	"github.com/astaxie/beego"
 )

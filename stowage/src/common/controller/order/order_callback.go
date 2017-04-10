@@ -1,7 +1,6 @@
 package order
 
 import (
-	"common/controller/base"
 	"common/lib/payment/wxisv"
 	"common/model"
 	"common/service"
@@ -11,10 +10,6 @@ import (
 
 	"github.com/astaxie/beego"
 )
-
-type Controller struct {
-	base.Controller
-}
 
 func (c *Controller) WxPay() {
 	body := c.Ctx.Input.RequestBody
@@ -34,12 +29,12 @@ func (c *Controller) WxPay() {
 	}
 
 	// 校验
-	xmlMap, err := wxisv.Xml2Map(resp)
-	if err != nil {
-		beego.Error("WxPay Xml2Map convert error:", err)
-		c.Ctx.WriteString("error")
-		return
-	}
+	//xmlMap, err := wxisv.Xml2Map(resp)
+	//if err != nil {
+	//	beego.Error("WxPay Xml2Map convert error:", err)
+	//	c.Ctx.WriteString("error")
+	//	return
+	//}
 
 	//sign := wxisv.Sign(xmlMap, "9ot34qkz0o9qxo4tvdjp9g98um4zw9wx")
 	//if resp.Sign != sign {
@@ -50,7 +45,7 @@ func (c *Controller) WxPay() {
 	trade_id := resp.OutTradeNo
 	payOrderId := resp.TransactionId
 	bankType := resp.BankType
-	err := c.orderPayCallback(trade_id, payOrderId, model.PWxPay, bankType, resp.OpenId, false)
+	err = c.orderPayCallback(trade_id, payOrderId, model.PwxPay, bankType, resp.OpenId, false)
 	if err != nil {
 		c.Ctx.WriteString("error")
 		return
@@ -95,7 +90,7 @@ func (c *Controller) orderPayCallback(orderId, payOrderId string, payType int, b
 	orderStatus.Order = order
 	//service.CreateOrderStatus(orderStatus)
 
-	beego.Info("success: ", order.OrderId)
+	beego.Info("success: ", order.Orderid)
 
 	return nil
 }

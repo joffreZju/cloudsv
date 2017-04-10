@@ -4,11 +4,11 @@ import (
 	"common/controller/account"
 	"common/controller/agent"
 	"common/controller/bill"
+	"common/controller/doc"
 	"common/controller/order"
 	"common/controller/recharge"
 	"common/controller/user"
 	"common/filter"
-	"stowage/src/common/controller/doc"
 
 	"github.com/astaxie/beego"
 )

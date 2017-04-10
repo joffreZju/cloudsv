@@ -2,10 +2,10 @@ package service
 
 import (
 	"common/lib/errcode"
+	"common/lib/util"
 	"common/model"
 	"encoding/binary"
 	"encoding/hex"
-	"stowage/src/common/lib/util"
 
 	"github.com/astaxie/beego"
 )
@@ -52,7 +52,7 @@ func GetUserInfo(id int) (u *model.User, err error) {
 }
 
 func GenUserNo(u *model.User) (no string, err error) {
-	bb := util.Md5Cal2Byte(u.Tel + seedu)
+	bb := util.Md5Cal2Byte([]byte(u.Tel + seedu))
 	binary.LittleEndian.PutUint32(bb[12:], uint32(u.Id))
 	no = hex.EncodeToString(bb)
 	return

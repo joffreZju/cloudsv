@@ -62,7 +62,7 @@ func InsertBill(b *Bill) (err error) {
 	if b != nil && b.User != nil && b.UserId == 0 {
 		b.UserId = b.User.Id
 	}
-	id, err := orm.NewOrm.Insert(b)
+	id, err := orm.NewOrm().Insert(b)
 	if err != nil {
 		b.Id = int(id)
 	}
@@ -76,10 +76,11 @@ func UpdateBillStatus(bid int) (err error) {
 		Id:          bid,
 		CheckStatus: BillNotchecked,
 	}
-	err = o.Update(bill, "CheckStatus")
+	_, err = o.Update(bill, "CheckStatus")
 	if err != nil {
 		return err
 	}
+	return
 }
 
 //根据用户id获取账单列表,分页

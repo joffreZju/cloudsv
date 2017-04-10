@@ -38,7 +38,7 @@ func AgentUpdate(a *Agent) (err error) {
 func GetAgentInfo(uid int) (a *Agent, err error) {
 	o := NewOrm(ReadOnly)
 	a = new(Agent)
-	err = o.QueryTable("agent").Filter("Uid", id).One(&a)
+	err = o.QueryTable("agent").Filter("Uid", uid).One(&a)
 	if err != nil {
 		return nil, err
 	}

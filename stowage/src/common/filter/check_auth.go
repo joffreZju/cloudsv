@@ -102,7 +102,7 @@ func GetAuthFilter() beego.FilterFunc {
 	d := &tokenauth.DefaultProvider{}
 	audience := &tokenauth.Audience{
 		Name:        "CusSingleTokenCheck",
-		ID:          "s4s_mobile",
+		ID:          "allsum_mobile",
 		TokenPeriod: tokenauth.TokenPeriod,
 	}
 	audience.Secret = d.GenerateSecretString(audience.ID)
@@ -120,7 +120,7 @@ func GetAuthFilter() beego.FilterFunc {
 		} else {
 			beego.Debug("CheckMobileWebFilter token", token.SingleID)
 			strs := strings.Split(token.SingleID, "_")
-			if len(strs) != 2 || strs[0] != "s4s" {
+			if len(strs) != 2 || strs[0] != "allsum" {
 				return
 			} else {
 				ctx.Request.Header.Add("uid", strs[1])

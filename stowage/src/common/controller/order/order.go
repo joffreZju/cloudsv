@@ -1,7 +1,7 @@
 package order
 
 import (
-	"s4s/common/controller/base"
+	"common/controller/base"
 )
 
 type Controller struct {

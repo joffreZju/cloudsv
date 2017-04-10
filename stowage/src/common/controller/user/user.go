@@ -72,7 +72,7 @@ func (c *Controller) UserRegister() {
 			UserType:  1,
 			Status:    1,
 		}
-		err = service.CreateAccount(&a)
+		err = service.AccountCreate(&a)
 		if err != nil {
 			beego.Error("create user account failed:", err)
 		}

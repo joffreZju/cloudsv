@@ -2,6 +2,7 @@ package wxisv
 
 import (
 	"bytes"
+	"common/lib/util"
 	"crypto"
 	"crypto/md5"
 	"crypto/rand"
@@ -15,7 +16,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"s4s/common/lib/util"
 	"sort"
 	"strconv"
 	"strings"

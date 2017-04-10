@@ -5,17 +5,19 @@ import (
 	"common/model"
 	"common/service"
 	"time"
+
+	"github.com/astaxie/beego"
 )
 
 func (c *Controller) PayOnline() {
-	userid := int(c.UserId)
-	price, _ := c.GetInt64("price")
+	userid := int(c.UserID)
+	//price, _ := c.GetInt64("price")
 	orderType, _ := c.GetInt("order_type")
-	if userId == 0 {
+	if userid == 0 {
 		c.ReplyErr(errcode.ErrParams)
 		return
 	}
-	user, err := model.GetUser(userId)
+	user, err := model.GetUser(userid)
 	if err != nil {
 		c.ReplyErr(err)
 		return
@@ -28,9 +30,10 @@ func (c *Controller) PayOnline() {
 
 	order := &model.Order{
 		User:      user,
-		OrderId:   service.GetTradeNO(4, userId),
+		Orderid:   service.GetTradeNO(4, userid),
 		OrderType: orderType,
 		Time:      time.Now().Format(model.TimeFormat),
 		Status:    status,
 	}
+	beego.Debug(order)
 }

@@ -3,6 +3,7 @@ package util
 import (
 	"encoding/hex"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -21,5 +22,6 @@ func RandomByte16() string {
 
 func UniqueRandom() string {
 	tm := time.Now().UnixNano()
-	tms := strconv.FormInt(tm, 10)
+	tms := strconv.FormatInt(tm, 10)
+	return tms
 }

@@ -45,7 +45,7 @@ type OrderStatus struct {
 type Order struct {
 	Id            int `orm:"auto;pk"`
 	Orderid       string
-	PayOrderid    string `json:,omitempty`
+	PayOrderId    string `json:,omitempty`
 	CreateT       string `json:,omitempty`
 	Status        int    `json:,omitempty`
 	ProcessStatus int    `json:,omitempty`
@@ -86,7 +86,7 @@ func GetPaidOrderOfToday(aid int) (list []*Order, err error) {
 	end := time.Now().Format("2006-01-02 15:04:05")
 	var tlist []*Order
 	o := NewOrm(ReadOnly)
-	_, err := o.QueryTable("Order").Filter("agent_id", aid).
+	_, err = o.QueryTable("Order").Filter("agent_id", aid).
 		Filter("Status", YiPaid).
 		Filter("Time__gte", start).
 		Filter("Time__lte", end).
