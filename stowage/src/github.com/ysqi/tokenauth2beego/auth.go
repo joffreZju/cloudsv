@@ -182,6 +182,7 @@ func (a *Automatic) CheckToken(req *http.Request) (token *tokenauth.Token, err e
 		return nil, tokenauth.ERR_TokenEmpty
 	}
 	// Get token.
+	fmt.Printf("++++++++++++++get:%s\n", tokenString)
 	token, err = tokenauth.ValidateToken(tokenString)
 	return
 }

@@ -12,11 +12,11 @@ const (
 )
 
 type File struct {
-	Id         int       `orm:"auto;pk"`
+	Id         int       `orm:"pk;auto;column(id)"`
 	FileNo     string    `orm:"size(50)"`
 	Uid        int       `json:",omitempty"`
 	Name       string    `orm:"size(50)" json:"name,omitempty"`
-	Mime       string    `orm:"size(50)"`
+	Mime       string    `orm:"size(250)"`
 	Size       int       `json:"size,omitempty"`
 	Md5        string    `orm:"size(50)" json:"md5,omitempty"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)" json:",omitempty"`

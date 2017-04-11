@@ -74,7 +74,7 @@ func (c *Controller) GetDocUsing() {
 }
 
 func (c *Controller) AddFile() {
-	uid, _ := c.GetInt("id")
+	uid := int(c.UserID)
 	f, h, err := c.GetFile("doc")
 	if err != nil {
 		beego.Error("User.UploadDoc error: ", err)
@@ -89,10 +89,11 @@ func (c *Controller) AddFile() {
 	}
 	mime := h.Header.Get("Content-Type")
 	beego.Debug("file content-type:", mime)
-	beego.Debug("data info :", filename)
+	beego.Debug("filename :", filename)
 	md5 := util.Md5Cal2String(data)
 	sz := len(data) / 1024
-	no := md5 + util.UniqueRandom()
+	no := util.UniqueRandom()
+	beego.Debug("no:", no, "sz:", sz, "mime:", mime)
 	file := model.File{
 		Uid:    uid,
 		Name:   filename,
@@ -116,9 +117,8 @@ func (c *Controller) FileDownload() {
 	f, err := model.GetFile(no)
 	if err != nil {
 		beego.Error("get file failed:", err)
-		c.ReplyErr(err)
+		c.ReplyErr(errcode.ErrFileNotExist)
 		return
 	}
 	c.ReplyFile(f.Mime, f.Name, []byte(f.Data))
-
 }

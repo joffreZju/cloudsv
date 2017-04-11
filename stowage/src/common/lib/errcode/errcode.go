@@ -48,6 +48,7 @@ var (
 	ErrGetBillFailed           = &CodeError{20140, "创建账单失败"}
 
 	ErrUserUploadDocFailed = &CodeError{20150, "文件上传失败"}
+	ErrFileNotExist        = &CodeError{20151, "文件不存在"}
 )
 
 func ParseError(err error) (code int, msg string) {

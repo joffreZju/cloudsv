@@ -22,6 +22,8 @@ type Controller struct {
 	base.Controller
 }
 
+var adminUserList = []string{"15158134537"}
+
 func (c *Controller) UserRegister() {
 	tel := c.GetString("tel")
 	passwd := c.GetString("password")
@@ -130,7 +132,6 @@ func (c *Controller) UserLogin() {
 	}
 
 	token, err := o2o.Auth.NewSingleToken(strconv.Itoa(user.Id), c.Ctx.ResponseWriter)
-	beego.Debug(token, err)
 	if err != nil {
 		beego.Error("o2o.Auth.NewSingleToken error:", err, *user)
 		c.ReplyErr(errcode.ErrAuthCreateFailed)
@@ -142,6 +143,7 @@ func (c *Controller) UserLogin() {
 		jsonstr["Token"] = token.Value
 		jsonstr["User"] = user
 		c.ReplySucc(jsonstr)
+		beego.Debug("login ok,token:%+v", token)
 		return
 	}
 

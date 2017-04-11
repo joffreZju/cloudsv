@@ -131,18 +131,15 @@ func SortAndConcat(param map[string]string) string {
 
 func RequestFilter() beego.FilterFunc {
 	return func(ctx *context.Context) {
+		// beego.Debug("request path : " + ctx.Request.URL.Path)
+		// 上传文件不做md5校验
+		if strings.Index(ctx.Request.URL.Path, "file_add") >= 0 {
+			return
+		}
 		params := make(map[string]string)
 		body, _ := ioutil.ReadAll(ctx.Request.Body)
 		ctx.Request.Body.Close()
 		json.Unmarshal(body, &params)
-		// beego.Debug("request path : " + ctx.Request.URL.Path)
-		// 上传图片不做md5校验
-		if strings.Index(ctx.Request.URL.Path, "/v2/pic/") == 0 ||
-			strings.Index(ctx.Request.URL.Path, "recognize_vehiclecard") >= 0 ||
-			strings.Index(ctx.Request.URL.Path, "upload_pic") >= 0 ||
-			strings.Index(ctx.Request.URL.Path, "upload_report_pic") >= 0 {
-			return
-		}
 
 		if ctx.Request.Method == "POST" {
 			for k := range ctx.Request.PostForm {
