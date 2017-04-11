@@ -12,6 +12,7 @@ GoInstall() {
 	appname=`echo $1|awk -F '/' '{print $NF}'`
 	gitversion=`git log -n 1|grep commit | awk -F ' ' '{print $2}'`
 	go build -ldflags "-X main.Version=${timestamp}_${gitversion} -X common/lib/deamon.Version=${timestamp}_${gitversion}" -o "$PWD/bin/$appname" $1
+	#go install -ldflags "-X main.Version=${timestamp}_${gitversion} -X common/lib/deamon.Version=${timestamp}_${gitversion}" $1
 	#go build -o "$PWD/bin/$appname" $1
 
 	if [ $? -eq 0 ]; then 
