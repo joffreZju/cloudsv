@@ -16,7 +16,6 @@ import (
 const (
 	ExemptPrefix string = "/exempt"
 	UserPrefix   string = "/v2/user"
-	CommonPrefix string = "/v2/common"
 	ManagePrefix string = "/v2/admin"
 	TradePrefix  string = "/v2/trade"
 )
@@ -25,7 +24,7 @@ func LoadRouter() {
 	// aliyu 健康检测
 	//beego.Router("/health", &maincontroller.Controller{}, "*:Check")
 	//wxpay callback
-	beego.Router("/notify/wxpay", &order.Controller{}, "*.Wxpay")
+	beego.Router("/notify/wxpay", &order.Controller{}, "Post:WxPay")
 
 	// user 相关
 	beego.Router(ExemptPrefix+"/user/getcode", &user.Controller{}, "Get:GetCode")
@@ -46,8 +45,8 @@ func LoadRouter() {
 	beego.Router(ManagePrefix+"/agent/clients", &agent.Controller{}, "Get:AgentClients")
 
 	//代金券
-	beego.Router(ManagePrefix+"/recharge/input", &recharge.Controller{}, "POST:RechargeCreate")
-	beego.Router(ManagePrefix+"/recharge/grant", &recharge.Controller{}, "POST:GrantReferer")
+	beego.Router(ManagePrefix+"/recharge/input", &recharge.Controller{}, "POST:RechargeCreate") //录入
+	beego.Router(ManagePrefix+"/recharge/grant", &recharge.Controller{}, "POST:GrantAgent")     //发放
 	beego.Router(ManagePrefix+"/recharge/recycle", &recharge.Controller{}, "POST:RechargeRecycle")
 	beego.Router(UserPrefix+"/recharge/using", &recharge.Controller{}, "POST:RechargeUsing")
 	beego.Router(ManagePrefix+"/recharge/info", &recharge.Controller{}, "Get:RechargeInfo")

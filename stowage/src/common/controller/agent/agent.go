@@ -66,7 +66,7 @@ func (c *Controller) AgentList() {
 }
 
 //代理商获取客户列表
-func (c *Controller) AgentClinets() {
+func (c *Controller) AgentClients() {
 	tel := c.GetString("tel")
 	users, err := service.AgentClients(tel)
 	if err != nil {
