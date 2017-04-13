@@ -7,12 +7,13 @@ import (
 )
 
 const (
+	//doctype
 	DocUsing = 1
 	DocHide  = 2
 )
 
 type File struct {
-	Id         int       `orm:"pk;auto;column(id)"`
+	Id         int       `orm:"pk;auto;column(id)" json:"-"`
 	FileNo     string    `orm:"size(50)"`
 	Uid        int       `json:",omitempty"`
 	Name       string    `orm:"size(50)" json:"name,omitempty"`
@@ -92,7 +93,7 @@ func GetDocument(id int) (doc *Document, err error) {
 }
 
 func SetDocHide(tp int) (err error) {
-	_, err = orm.NewOrm().QueryTable("Documnet").Filter("DocType", tp).Update(orm.Params{
+	_, err = orm.NewOrm().QueryTable("Document").Filter("DocType", tp).Update(orm.Params{
 		"Status": DocHide,
 	})
 
@@ -101,12 +102,13 @@ func SetDocHide(tp int) (err error) {
 
 //根据文档类型获取当前有效文档
 func GetDocByType(tp int) (doc *Document, err error) {
+	doc = &Document{}
 	err = orm.NewOrm().QueryTable("Document").Filter("DocType", tp).Filter("Status", DocUsing).One(doc)
 	return
 }
 
-func GetDocListByType(tp int) (docs *[]Document, err error) {
-	_, err = orm.NewOrm().QueryTable("Documnet").Filter("DocType", tp).All(&docs)
+func GetDocListByType(tp int) (docs []*Document, err error) {
+	_, err = orm.NewOrm().QueryTable("Document").Filter("DocType", tp).All(&docs)
 	return
 }
 

@@ -4,9 +4,9 @@ import (
 	"common/controller/account"
 	"common/controller/agent"
 	"common/controller/bill"
+	"common/controller/coupon"
 	"common/controller/doc"
 	"common/controller/order"
-	"common/controller/recharge"
 	"common/controller/user"
 	"common/filter"
 
@@ -30,6 +30,8 @@ func LoadRouter() {
 	beego.Router(ExemptPrefix+"/user/getcode", &user.Controller{}, "Get:GetCode")
 	beego.Router(ExemptPrefix+"/user/register", &user.Controller{}, "POST:UserRegister")
 	beego.Router(ExemptPrefix+"/user/login", &user.Controller{}, "POST:UserLogin")
+	beego.Router(ExemptPrefix+"/user/login_phone", &user.Controller{}, "POST:UserLoginPhoneCode")
+	beego.Router(UserPrefix+"/login_out", &user.Controller{}, "Get:LoginOut")
 	beego.Router(UserPrefix+"/info", &user.Controller{}, "Get:GetUserInfo")
 	beego.Router(UserPrefix+"/passwd/modify", &user.Controller{}, "POST:Resetpwd")
 	beego.Router(UserPrefix+"/edit_profile", &user.Controller{}, "POST:EditProfile")
@@ -45,12 +47,12 @@ func LoadRouter() {
 	beego.Router(ManagePrefix+"/agent/clients", &agent.Controller{}, "Get:AgentClients")
 
 	//代金券
-	beego.Router(ManagePrefix+"/recharge/input", &recharge.Controller{}, "POST:RechargeCreate") //录入
-	beego.Router(ManagePrefix+"/recharge/grant", &recharge.Controller{}, "POST:GrantAgent")     //发放
-	beego.Router(ManagePrefix+"/recharge/recycle", &recharge.Controller{}, "POST:RechargeRecycle")
-	beego.Router(UserPrefix+"/recharge/using", &recharge.Controller{}, "POST:RechargeUsing")
-	beego.Router(ManagePrefix+"/recharge/info", &recharge.Controller{}, "Get:RechargeInfo")
-	//beego.Router(ManagePrefix+"/recharge/", &recharge.Controller{}, "POST:RechargeInfo")
+	beego.Router(ManagePrefix+"/coupon/input", &coupon.Controller{}, "POST:CouponCreate") //录入
+	beego.Router(ManagePrefix+"/coupon/grant", &coupon.Controller{}, "POST:GrantAgent")   //发放
+	beego.Router(ManagePrefix+"/coupon/recycle", &coupon.Controller{}, "POST:CouponRecycle")
+	beego.Router(UserPrefix+"/coupon/using", &coupon.Controller{}, "POST:CouponUsing")
+	beego.Router(ManagePrefix+"/coupon/info", &coupon.Controller{}, "Get:CouponInfo")
+	//beego.Router(ManagePrefix+"/coupon/", &coupon.Controller{}, "POST:CouponInfo")
 
 	//订单交易
 	beego.Router(UserPrefix+"/order/pay", &order.Controller{}, "Get:PayOnline")
@@ -61,10 +63,10 @@ func LoadRouter() {
 	beego.Router(UserPrefix+"/bill/info", &bill.Controller{}, "Get:BillInfo")
 
 	//文档
-	beego.Router(ManagePrefix+"/doc/add", &doc.Controller{}, "POST:AddDocument")        //文档上传
-	beego.Router(UserPrefix+"/doc/view", &doc.Controller{}, "GET:GetDocUsing")          //文档查看
-	beego.Router(ManagePrefix+"/doc/list", &doc.Controller{}, "GET:GetDocList")         //文档列表
-	beego.Router(ManagePrefix+"/doc/set_status", &doc.Controller{}, "Get:SetDocStatus") //文档列表
+	beego.Router(ManagePrefix+"/doc/add", &doc.Controller{}, "POST:AddDocument")         //文档上传
+	beego.Router(UserPrefix+"/doc/view", &doc.Controller{}, "GET:GetDocUsing")           //文档查看
+	beego.Router(ManagePrefix+"/doc/list", &doc.Controller{}, "GET:GetDocList")          //文档列表
+	beego.Router(ManagePrefix+"/doc/set_status", &doc.Controller{}, "Post:SetDocStatus") //文档列表
 
 	beego.Router(UserPrefix+"/doc/file_add", &doc.Controller{}, "POST:AddFile")      //文件上传
 	beego.Router(UserPrefix+"/doc/file_down", &doc.Controller{}, "GET:FileDownload") //文件下载

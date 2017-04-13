@@ -31,8 +31,9 @@ func (c *Controller) AgentCreate() {
 	}
 	a := model.Agent{
 		LicenseFile: licenceFile,
-		User:        &u,
-		Status:      1,
+		//Tel:         tel,
+		User:   &u,
+		Status: 1,
 	}
 	err := service.AgentCreate(&a)
 	if err != nil {
@@ -79,30 +80,38 @@ func (c *Controller) AgentClients() {
 
 //获取代理商信息
 func (c *Controller) AgentGetInfo() {
-	id, _ := c.GetInt("id")
+	id, _ := c.GetInt("aid")
 	a, err := model.GetAgentInfo(id)
 	if err != nil {
-		beego.Error("not find the agent,id:", id, err)
+		beego.Error("not find the agent,userid:", id, err)
 		c.ReplyErr(errcode.ErrAgentNotExisted)
 		return
 	}
-	c.ReplySucc(a)
+	c.ReplySucc(*a)
 	return
 
 }
 
 //修改代理商信息
 func (c *Controller) AgentModify() {
-	id, _ := c.GetInt("id")
+	id, err := c.GetInt("aid")
+	if err != nil {
+		beego.Error("parameters error:", err)
+		c.ReplyErr(errcode.ErrParams)
+		return
+	}
 	status, _ := c.GetInt("status")
 	licenseFile := c.GetString("licenseFile")
+	desc := c.GetString("desc")
 	a := model.Agent{
-		Id:          id,
+		Uid:         id,
 		LicenseFile: licenseFile,
 		Status:      status,
+		Desc:        desc,
 	}
-	err := model.AgentUpdate(&a)
+	err = model.AgentUpdate(&a)
 	if err != nil {
+		beego.Error("update agent fail:", err)
 		c.ReplyErr(err)
 		return
 	}

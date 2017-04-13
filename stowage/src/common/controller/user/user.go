@@ -22,7 +22,16 @@ type Controller struct {
 	base.Controller
 }
 
-var adminUserList = []string{"15158134537"}
+var AllsumUserList = []string{"15158134537"}
+
+func getGroup(tel string) int {
+	for _, v := range AllsumUserList {
+		if tel == v {
+			return 1
+		}
+	}
+	return 0
+}
 
 func (c *Controller) UserRegister() {
 	tel := c.GetString("tel")
@@ -131,7 +140,8 @@ func (c *Controller) UserLogin() {
 		return
 	}
 
-	token, err := o2o.Auth.NewSingleToken(strconv.Itoa(user.Id), c.Ctx.ResponseWriter)
+	g := getGroup(tel)
+	token, err := o2o.Auth.NewSingleToken(strconv.Itoa(user.Id), g, c.Ctx.ResponseWriter)
 	if err != nil {
 		beego.Error("o2o.Auth.NewSingleToken error:", err, *user)
 		c.ReplyErr(errcode.ErrAuthCreateFailed)
@@ -148,6 +158,50 @@ func (c *Controller) UserLogin() {
 	}
 
 }
+
+func (c *Controller) UserLoginPhoneCode() {
+	tel := c.GetString("tel")
+	user, err := service.GetUserByTel(tel)
+	if err != nil {
+		beego.Error(errcode.ErrUserNotExisted)
+		c.ReplyErr(errcode.ErrUserNotExisted)
+		return
+	}
+
+	var code int
+	if code, err = strconv.Atoi(c.GetString("code")); err != nil {
+		beego.Error("user.regist error:", err)
+		c.ReplyErr(errcode.ErrAuthCodeError)
+		return
+	}
+	vcode := c.Cache.Get(tel)
+	if vcode == nil {
+		c.ReplyErr(errcode.ErrAuthCodeExpired)
+		return
+	} else if v, _ := strconv.Atoi(fmt.Sprintf("%s", vcode)); v != code {
+		c.ReplyErr(errcode.ErrAuthCodeError)
+		return
+	} else {
+		token, err := o2o.Auth.NewSingleToken(strconv.Itoa(user.Id), getGroup(tel), c.Ctx.ResponseWriter)
+		if err != nil {
+			beego.Error("o2o.Auth.NewSingleToken error:", err, *user)
+			c.ReplyErr(errcode.ErrAuthCreateFailed)
+			return
+		} else {
+			service.UserUpdate(user, "LoginTime")
+
+			jsonstr := make(map[string]interface{})
+			jsonstr["Token"] = token.Value
+			jsonstr["User"] = user
+			c.ReplySucc(jsonstr)
+			beego.Debug("login ok,token:%+v", token)
+			return
+		}
+
+	}
+
+}
+
 func (c *Controller) LoginOut() {
 	token, err := o2o.Auth.CheckToken(c.Ctx.Request)
 	if err != nil {

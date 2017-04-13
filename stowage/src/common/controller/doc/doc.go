@@ -31,8 +31,8 @@ func (c *Controller) AddDocument() {
 	}
 	err := service.NewDocument(&d)
 	if err != nil {
-		beego.Error("create documnet failed:", err)
-		c.ReplyErr(err)
+		beego.Error("create document failed:", err)
+		c.ReplyErr(errcode.ErrUploadDocFailed)
 		return
 	}
 	c.ReplySucc(d)
@@ -44,7 +44,7 @@ func (c *Controller) SetDocStatus() {
 	status, _ := c.GetInt("status")
 	err := service.SetDocStatus(status, dtp, id)
 	if err != nil {
-		beego.Error("set documnet status failed:", err)
+		beego.Error("set document status failed:", err)
 		c.ReplyErr(err)
 		return
 	}
@@ -55,7 +55,7 @@ func (c *Controller) GetDocList() {
 	dtp, _ := c.GetInt("dtp")
 	list, err := model.GetDocListByType(dtp)
 	if err != nil {
-		beego.Error("get documnet list failed:", err)
+		beego.Error("get document list failed:", err)
 		c.ReplyErr(err)
 		return
 	}
@@ -66,7 +66,7 @@ func (c *Controller) GetDocUsing() {
 	dtp, _ := c.GetInt("dtp")
 	doc, err := model.GetDocByType(dtp)
 	if err != nil {
-		beego.Error("get documnet list failed:", err)
+		beego.Error("get document list failed:", err)
 		c.ReplyErr(err)
 		return
 	}
@@ -78,7 +78,7 @@ func (c *Controller) AddFile() {
 	f, h, err := c.GetFile("doc")
 	if err != nil {
 		beego.Error("User.UploadDoc error: ", err)
-		c.ReplyErr(errcode.ErrUserUploadDocFailed)
+		c.ReplyErr(errcode.ErrUploadFileFailed)
 		return
 	}
 	defer f.Close()

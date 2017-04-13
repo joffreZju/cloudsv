@@ -3,6 +3,8 @@ package account
 import (
 	"common/controller/base"
 	"common/service"
+
+	"github.com/astaxie/beego"
 )
 
 type Controller struct {
@@ -14,6 +16,7 @@ func (c *Controller) AccountInfo() {
 	uid := int(c.UserID)
 	account, err := service.GetAccount(uid)
 	if err != nil {
+		beego.Error("get account failed:", err, uid)
 		c.ReplyErr(err)
 		return
 	}

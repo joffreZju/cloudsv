@@ -1,10 +1,11 @@
-package recharge
+package coupon
 
 import (
 	"common/controller/base"
 	"common/lib/errcode"
 	"common/model"
 	"common/service"
+	"strings"
 
 	"github.com/astaxie/beego"
 )
@@ -14,7 +15,7 @@ type Controller struct {
 }
 
 //导入代金券
-func (c *Controller) RechargeCreate() {
+func (c *Controller) CouponCreate() {
 	start, err := c.GetInt("start")
 	if err != nil {
 		beego.Error("parameters wrong", err)
@@ -27,10 +28,14 @@ func (c *Controller) RechargeCreate() {
 		c.ReplyErr(errcode.ErrParams)
 		return
 	}
-	err = service.AddRecharges(start, end)
+	err = service.AddCoupons(start, end)
 	if err != nil {
 		beego.Error(err)
-		c.ReplyErr(err)
+		if strings.Contains(err.Error(), "duplicate key") {
+			c.ReplyErr(errcode.ErrCouponExist)
+		} else {
+			c.ReplyErr(errcode.ErrParams)
+		}
 		return
 	}
 	c.ReplySucc("success")
@@ -39,7 +44,7 @@ func (c *Controller) RechargeCreate() {
 
 //向代理商发放代金券
 func (c *Controller) GrantAgent() {
-	agentid := c.GetString("agent")
+	agentid, _ := c.GetInt("agent")
 	start, err := c.GetInt("start")
 	if err != nil {
 		beego.Error("parameters wrong", err)
@@ -63,9 +68,9 @@ func (c *Controller) GrantAgent() {
 }
 
 //管理员回收代金券
-func (c *Controller) RechargeRecycle() {
-	agentuser := c.GetString("agentid")
-	err := model.UpdateRechargeByAgent(agentuser)
+func (c *Controller) CouponRecycle() {
+	aid, _ := c.GetInt("agent")
+	err := model.UpdateCouponByAgent(aid)
 	if err != nil {
 		beego.Error(err)
 		c.ReplyErr(err)
@@ -76,11 +81,11 @@ func (c *Controller) RechargeRecycle() {
 }
 
 //用户消费代金券
-func (c *Controller) RechargeUsing() {
+func (c *Controller) CouponUsing() {
 	code := c.GetString("verify")
 	num, _ := c.GetInt("number")
-	uid := c.GetString("userid")
-	err := service.UsingRecharge(num, uid, code)
+	uid := int(c.UserID)
+	err := service.UsingCoupon(num, uid, code)
 	if err != nil {
 		beego.Error(err)
 		c.ReplyErr(err)
@@ -91,6 +96,6 @@ func (c *Controller) RechargeUsing() {
 }
 
 //浏览代金券数据
-func (c *Controller) RechargeInfo() {
+func (c *Controller) CouponInfo() {
 
 }

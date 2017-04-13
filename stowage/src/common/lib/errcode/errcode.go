@@ -47,8 +47,11 @@ var (
 	ErrCreateOrderStatusFailed = &CodeError{20132, "创建订单状态失败"}
 	ErrGetBillFailed           = &CodeError{20140, "创建账单失败"}
 
-	ErrUserUploadDocFailed = &CodeError{20150, "文件上传失败"}
-	ErrFileNotExist        = &CodeError{20151, "文件不存在"}
+	ErrUploadFileFailed = &CodeError{20150, "文件上传失败"}
+	ErrFileNotExist     = &CodeError{20151, "文件不存在"}
+	ErrUploadDocFailed  = &CodeError{20152, "文档上传失败"}
+
+	ErrCouponExist = &CodeError{20155, "存在重复编号"}
 )
 
 func ParseError(err error) (code int, msg string) {

@@ -4,6 +4,7 @@ import (
 	"common/lib/util"
 	"common/model"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -12,8 +13,8 @@ const (
 	DefaultPrice int = 200
 )
 
-func UsingRecharge(num int, uid string, code string) (err error) {
-	r, err := model.GetRecharge(num)
+func UsingCoupon(num int, uid int, code string) (err error) {
+	r, err := model.GetCoupon(num)
 	if err != nil {
 		return err
 	}
@@ -24,32 +25,38 @@ func UsingRecharge(num int, uid string, code string) (err error) {
 		return errors.New("核销码错误")
 	}
 	r.Status = 3
-	r.User = uid
+	r.Userid = uid
 	r.UsedTime = time.Now()
-	return model.UpdateRecharge(r, "Status", "User", "UsedTime")
+	return model.UpdateCoupon(r, "Status", "Userid", "UsedTime")
 }
 
-func AddRecharges(start, end int) (err error) {
+func AddCoupons(start, end int) (err error) {
 	caps := end - start
 	if caps < 1 || start < LeastNumber {
-		return errors.New("recharge range wrong")
+		return fmt.Errorf("coupon range wrong:%d:%d", start, end)
 	}
-	charges := make([]model.Recharge, caps)
+	charges := make([]model.Coupon, caps)
 	for i := 0; i < caps; i++ {
 		charges[i].Number = start + i
 		charges[i].VerifyCode = util.RandomByte6()
 		charges[i].Denomination = DefaultPrice
 		charges[i].Status = 0
 	}
-	return model.InsertRechargeMulti(charges)
+	return model.InsertCouponMulti(charges)
 }
 
-func GrantAgent(start, end int, aid string) (err error) {
+func GrantAgent(start, end int, aid int) (err error) {
 	caps := end - start
 	if caps < 1 || start < LeastNumber {
-		return errors.New("recharge range wrong")
+		return fmt.Errorf("coupon range wrong:%d:%d", start, end)
 	}
-	count, err := model.UpdateRechargeMulti(start, end, aid)
+	/*
+		user, err := model.GetUser(aid)
+		if err != nil {
+			return errcode.ErrUserNotExisted
+		}*/
+
+	count, err := model.UpdateCouponMulti(start, end, aid)
 	if err != nil {
 		return err
 	}
@@ -60,6 +67,6 @@ func GrantAgent(start, end int, aid string) (err error) {
 	return
 }
 
-//func RechargeRecycle() (err error) {
+//func couponRecycle() (err error) {
 //
 //}

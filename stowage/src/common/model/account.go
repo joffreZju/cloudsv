@@ -39,6 +39,7 @@ func GetAccountByAccountNo(no string) (a *Account, err error) {
 }
 
 func GetAccountByUserId(id int) (a *Account, err error) {
+	a = new(Account)
 	err = orm.NewOrm().QueryTable("Account").Filter("Userid", id).One(a)
 	return
 }
