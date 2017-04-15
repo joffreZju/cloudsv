@@ -27,14 +27,14 @@ func LoadRouter() {
 	beego.Router("/notify/wxpay", &order.Controller{}, "Post:WxPay")
 
 	// user 相关
-	beego.Router(ExemptPrefix+"/user/getcode", &user.Controller{}, "Get:GetCode")
-	beego.Router(ExemptPrefix+"/user/register", &user.Controller{}, "POST:UserRegister")
-	beego.Router(ExemptPrefix+"/user/login", &user.Controller{}, "POST:UserLogin")
-	beego.Router(ExemptPrefix+"/user/login_phone", &user.Controller{}, "POST:UserLoginPhoneCode")
-	beego.Router(UserPrefix+"/login_out", &user.Controller{}, "Get:LoginOut")
-	beego.Router(UserPrefix+"/info", &user.Controller{}, "Get:GetUserInfo")
-	beego.Router(UserPrefix+"/passwd/modify", &user.Controller{}, "POST:Resetpwd")
-	beego.Router(UserPrefix+"/edit_profile", &user.Controller{}, "POST:EditProfile")
+	beego.Router(ExemptPrefix+"/user/getcode", &user.Controller{}, "*:GetCode")
+	beego.Router(ExemptPrefix+"/user/register", &user.Controller{}, "*:UserRegister")
+	beego.Router(ExemptPrefix+"/user/login", &user.Controller{}, "*:UserLogin")
+	beego.Router(ExemptPrefix+"/user/login_phone", &user.Controller{}, "*:UserLoginPhoneCode")
+	beego.Router(UserPrefix+"/login_out", &user.Controller{}, "*:LoginOut")
+	beego.Router(UserPrefix+"/info", &user.Controller{}, "*:GetUserInfo")
+	beego.Router(UserPrefix+"/passwd/modify", &user.Controller{}, "*:Resetpwd")
+	beego.Router(UserPrefix+"/edit_profile", &user.Controller{}, "*:EditProfile")
 
 	//用户的账户
 	beego.Router(UserPrefix+"/account/info", &account.Controller{}, "Get:AccountInfo")
@@ -52,7 +52,7 @@ func LoadRouter() {
 	beego.Router(ManagePrefix+"/coupon/recycle", &coupon.Controller{}, "POST:CouponRecycle")
 	beego.Router(UserPrefix+"/coupon/using", &coupon.Controller{}, "POST:CouponUsing")
 	beego.Router(ManagePrefix+"/coupon/info", &coupon.Controller{}, "Get:CouponInfo")
-	//beego.Router(ManagePrefix+"/coupon/", &coupon.Controller{}, "POST:CouponInfo")
+	beego.Router(ManagePrefix+"/coupon/list", &coupon.Controller{}, "POST:CouponList")
 
 	//订单交易
 	beego.Router(UserPrefix+"/order/pay", &order.Controller{}, "Get:PayOnline")

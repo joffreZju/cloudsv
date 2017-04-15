@@ -44,7 +44,7 @@ func (c *Controller) CouponCreate() {
 
 //向代理商发放代金券
 func (c *Controller) GrantAgent() {
-	agentid, _ := c.GetInt("agent")
+	userid, _ := c.GetInt("agent")
 	start, err := c.GetInt("start")
 	if err != nil {
 		beego.Error("parameters wrong", err)
@@ -57,7 +57,7 @@ func (c *Controller) GrantAgent() {
 		c.ReplyErr(errcode.ErrParams)
 		return
 	}
-	err = service.GrantAgent(start, end, agentid)
+	err = service.GrantAgent(start, end, userid)
 	if err != nil {
 		beego.Error(err)
 		c.ReplyErr(err)
@@ -70,13 +70,36 @@ func (c *Controller) GrantAgent() {
 //管理员回收代金券
 func (c *Controller) CouponRecycle() {
 	aid, _ := c.GetInt("agent")
-	err := model.UpdateCouponByAgent(aid)
+	err := model.RecycleCouponByAgent(aid)
 	if err != nil {
-		beego.Error(err)
 		c.ReplyErr(err)
 		return
 	}
 	c.ReplySucc("success")
+	return
+}
+
+/*
+func (c *Controller) CouponRecycleRange() {
+	s, _ := c.GetInt("start")
+	e, _ := c.GetInt("end")
+
+	err = service.RecycleCouponRange(s,e)
+}*/
+
+//代理商卡券，分页
+func (c *Controller) CouponList() {
+	page, _ := c.GetInt("page")
+	aid, _ := c.GetInt("agent")
+	count, list, err := service.GetCouponList(aid, page)
+	if err != nil {
+		c.ReplyErr(err)
+		return
+	}
+	c.ReplySucc(map[string]interface{}{
+		"total":   count,
+		"coupons": list,
+	})
 	return
 }
 
@@ -95,7 +118,14 @@ func (c *Controller) CouponUsing() {
 	return
 }
 
-//浏览代金券数据
+//查看某张代金券
 func (c *Controller) CouponInfo() {
-
+	no, _ := c.GetInt("number")
+	co, err := service.GetCoupon(no)
+	if err != nil {
+		c.ReplyErr(err)
+		return
+	}
+	c.ReplySucc(co)
+	return
 }

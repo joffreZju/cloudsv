@@ -2,12 +2,22 @@ package util
 
 import (
 	"encoding/hex"
+	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 )
 
+func GetTradeNo(tp int, id int) string {
+	str := strings.Replace(time.Now().Format("0102150405.000"), ".", "", 1)
+	str += strconv.Itoa(tp)
+	str += fmt.Sprintf("%04d", id)
+	return str
+}
+
 func RandomByte6() string {
+	rand.New(rand.NewSource(time.Now().Unix()))
 	return "A7BI99"
 }
 

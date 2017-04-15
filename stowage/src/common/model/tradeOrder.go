@@ -10,7 +10,9 @@ const (
 	//PaidType
 	PwxPay  = 1
 	PaliPay = 2
+	PCoupon = 3
 
+	//process status
 	OrderWaitProcess = 0 // 待处理
 	OrderProcessing  = 1 // 处理中
 	OrderFinished    = 2 // 处理完成
@@ -43,25 +45,29 @@ type OrderStatus struct {
 
 //用户平台内消费也存于此
 type Order struct {
-	Id            int `orm:"auto;pk"`
-	Orderid       string
-	PayOrderId    string `json:,omitempty`
-	CreateT       string `json:,omitempty`
+	Id            int    `orm:"auto;pk"`
+	Orderid       string `orm:"unique"`
+	PayOrderId    string `orm:"null" json:,omitempty`
+	CreateTime    string `orm:"auto_now_add;type(datetime)"`
 	Status        int    `json:,omitempty`
 	ProcessStatus int    `json:,omitempty`
-	PaidType      int    `json:",omitempty`  //支付方式，渠道
-	Price         int64  `json:,omitempty`   //用户支付金额
-	AgentSharing  int64  `json:,omitempty`   //代理商分成
-	Desc          string `json:",omitempty"` //备注信息
-	Remark        string `json:",omitempty"` //附加信息
-	PaidBankType  string `json:",omitempty"` // 银行卡类型, 微信支付有
-	OrderType     int    `json:",omitempty"` //1.充值2.消费
-	SubType       int    `json:",omitempty"` //1.算配载 2.算路由
-	Time          string `json:",omitempty"` // 下单时间
+	PaidType      int    `json:",omitempty`             //支付方式，渠道
+	Price         int64  `json:,omitempty`              //用户支付金额
+	AgentSharing  int64  `orm:"null" json:,omitempty`   //代理商分成
+	Desc          string `orm:"null" json:",omitempty"` //备注信息
+	Remark        string `orm:"null" json:",omitempty"` //附加信息
+	PaidBankType  string `orm:"null" json:",omitempty"` // 银行卡类型, 微信支付有
+	OrderType     int    `json:",omitempty"`            //1.充值2.消费
+	SubType       int    `orm:"null" json:",omitempty"` //1.算配载 2.算路由
+	Time          string `json:"-"`                     // 下单时间
 	User          *User  `orm:"-" json:",omitempty"`
 	Uid           int    `json:"-"`
 	Bill          *Bill  `orm:"reverse(one);column(bill_id)" json:",omitempty"`
 	Agent         *Agent `orm:"rel(fk);null;column(agent_id)" json:",omitempty"`
+}
+
+func (u *Order) TableName() string {
+	return "allsum_order"
 }
 
 func (o *Order) UpdateProcessStatus() {
@@ -86,7 +92,7 @@ func GetPaidOrderOfToday(aid int) (list []*Order, err error) {
 	end := time.Now().Format("2006-01-02 15:04:05")
 	var tlist []*Order
 	o := NewOrm(ReadOnly)
-	_, err = o.QueryTable("Order").Filter("agent_id", aid).
+	_, err = o.QueryTable("allsum_order").Filter("agent_id", aid).
 		Filter("Status", YiPaid).
 		Filter("Time__gte", start).
 		Filter("Time__lte", end).
@@ -129,7 +135,7 @@ func UpdateOrder(o *Order, fields ...string) (err error) {
 
 func GetOrderByOrderId(orderId string) (o *Order, err error) {
 	o = new(Order)
-	err = orm.NewOrm().QueryTable("Order").Filter("OrderId", orderId).One(o)
+	err = orm.NewOrm().QueryTable("allsum_order").Filter("OrderId", orderId).One(o)
 	if o != nil {
 		o.User = &User{Id: o.Uid}
 	}

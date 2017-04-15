@@ -40,8 +40,9 @@ func main() {
 	LoadRouter()
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
-		AllowOrigins:     []string{"http://localhost:8080"},
-		AllowMethods:     []string{"GET", "DELETE", "PUT", "PATCH", "POST"},
+		//AllowOrigins:     []string{"http://localhost:8090", "http://www.suanpeizaix.comw", "http://www.suanpeizaix.com:8090"},
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "DELETE", "PUT", "PATCH", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Origin"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,

@@ -60,14 +60,15 @@ func (c *Controller) UserRegister() {
 		return
 	} else {
 		u := model.User{
-			Tel:        tel,
-			Password:   passwdc,
-			Descp:      desc,
-			Gender:     gender,
-			Address:    addr,
-			Mail:       mail,
-			Referer:    referer,
-			CreateTime: time.Now(),
+			Tel:      tel,
+			Password: passwdc,
+			Descp:    desc,
+			Gender:   gender,
+			Address:  addr,
+			Mail:     mail,
+			Referer:  referer,
+			UserType: 1,
+			//CreateTime: time.Now(),
 		}
 		err := service.UserCreate(&u)
 		if err != nil {
@@ -147,6 +148,7 @@ func (c *Controller) UserLogin() {
 		c.ReplyErr(errcode.ErrAuthCreateFailed)
 		return
 	} else {
+		user.LoginTime = time.Now()
 		service.UserUpdate(user, "LoginTime")
 
 		jsonstr := make(map[string]interface{})
@@ -170,7 +172,7 @@ func (c *Controller) UserLoginPhoneCode() {
 
 	var code int
 	if code, err = strconv.Atoi(c.GetString("code")); err != nil {
-		beego.Error("user.regist error:", err)
+		beego.Error("user.login error:", err)
 		c.ReplyErr(errcode.ErrAuthCodeError)
 		return
 	}
@@ -188,6 +190,7 @@ func (c *Controller) UserLoginPhoneCode() {
 			c.ReplyErr(errcode.ErrAuthCreateFailed)
 			return
 		} else {
+			user.LoginTime = time.Now()
 			service.UserUpdate(user, "LoginTime")
 
 			jsonstr := make(map[string]interface{})
@@ -262,7 +265,7 @@ func (c *Controller) GetCode() {
 
 	// 测试环境用1234，不发短信
 	if beego.BConfig.RunMode != "prod" {
-		err := c.Cache.Put(tel, 1234, time.Duration(300*time.Second))
+		err := c.Cache.Put(tel, 123456, time.Duration(300*time.Second))
 		if err != nil {
 			beego.Error("GetCode set redis error", err)
 			c.ReplyErr(err)

@@ -1,21 +1,24 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/astaxie/beego/orm"
 )
 
 type Agent struct {
-	Id  int `orm:"auto;pk;column(id)"` // 表内自增
-	Uid int `orm:"unique"`
-	//Tel         string `json:"-"`
-	LicenseFile string
+	Id          int       `orm:"auto;pk;column(id)" json:"-"` // 表内自增
+	Uid         int       `orm:"unique"`
+	Name        string    `orm:"size(64)"`
+	LicenseFile string    `orm:"size(64)"`
 	Status      int       `orm:"default(1)"` //1 正常，2 禁用
 	Desc        string    `orm:"null"`
 	CreateTime  time.Time `orm:"auto_now_add;type(datetime)"`
 	Consumers   []*User   `orm:"-" json:",omitempty"`
+	ConsumNo    int       `orm:"-"`
 	User        *User     `orm:"rel(fk)" json:",omitempty"`
+	Account     *Account  `orm:"-" json:",omitempty"`
 }
 
 func InsertAgent(a *Agent) (err error) {
@@ -28,6 +31,9 @@ func InsertAgent(a *Agent) (err error) {
 }
 
 func SetAgentStatus(a *Agent) (err error) {
+	if a.Status != 1 || a.Status != 2 {
+		return fmt.Errorf("status param wrong")
+	}
 	_, err = orm.NewOrm().Update(a, "Status")
 	return err
 }

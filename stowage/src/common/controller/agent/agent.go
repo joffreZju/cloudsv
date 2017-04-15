@@ -24,6 +24,7 @@ func (c *Controller) AgentCreate() {
 	licenceFile := c.GetString("licenseFile")
 	tel := c.GetString("tel")
 	passwdc := keycrypt.Sha256Cal(defaultPasswd)
+	name := c.GetString("name")
 	u := model.User{
 		Tel:      tel,
 		Password: passwdc,
@@ -31,9 +32,9 @@ func (c *Controller) AgentCreate() {
 	}
 	a := model.Agent{
 		LicenseFile: licenceFile,
-		//Tel:         tel,
-		User:   &u,
-		Status: 1,
+		Name:        name,
+		User:        &u,
+		Status:      1,
 	}
 	err := service.AgentCreate(&a)
 	if err != nil {
@@ -58,7 +59,7 @@ func (c *Controller) AgentCreate() {
 
 //获取代理商列表
 func (c *Controller) AgentList() {
-	list, err := model.GetAgentAll()
+	list, err := service.AgentGetList()
 	if err != nil {
 		c.ReplyErr(err)
 		return

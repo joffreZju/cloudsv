@@ -154,5 +154,6 @@ func RequestFilter() beego.FilterFunc {
 		for k, v := range params {
 			ctx.Request.Form.Add(k, v)
 		}
+		beego.Debug("request params:", params)
 	}
 }

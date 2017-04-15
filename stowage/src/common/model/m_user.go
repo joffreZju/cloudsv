@@ -17,22 +17,26 @@ const (
 )
 
 type User struct {
-	Id         int       `orm:"auto;pk;column(id)" json:"-"` // 用户ID，表内自增
+	Id         int       `orm:"auto;pk;column(id)" ` // 用户ID，表内自增
 	Unum       string    `orm:"null"  json:"-"`
-	Tel        string    `orm:"unique" json:",omitempty"`
-	Password   string    `json:"-"`                     // 密码
-	UserName   string    `orm:"null" json:",omitempty"` // 用户名
-	Icon       string    `orm:"null" json:",omitempty"`
+	Tel        string    `orm:"unique;size(15)" json:",omitempty"`
+	Password   string    `json:"-"`                              // 密码
+	UserName   string    `orm:"null;size(64)" json:",omitempty"` // 用户名
+	Icon       string    `orm:"null;size(64)" json:",omitempty"`
 	Descp      string    `orm:"null" json:",omitempty"`
 	Gender     int8      `orm:"null" json:",omitempty"`
-	Address    string    `orm:"null" json:",omitempty"`
-	LoginTime  time.Time `orm:"type(datetime);null" json:",omitempty"` //登录时间
-	CreateTime time.Time `orm:"type(datetime)" json:",omitempty"`      //
-	Mail       string    `orm:"null" json:",omitempty"`
+	Address    string    `orm:"null;size(64)" json:",omitempty"`
+	LoginTime  time.Time `orm:"type(datetime);null" json:",omitempty"`         //登录时间
+	CreateTime time.Time `orm:"auto_now_add;type(datetime)" json:",omitempty"` //
+	Mail       string    `orm:"null;size(64)" json:",omitempty"`
 	UserType   int       `orm:"default(1)" json:",omitempty"` //1 普通用户,2 代理商
-	Referer    string    `orm:"null" json:",omitempty"`
-	RegisterID string    `orm:"null" json:",omitempty"` // 用于给用户推送消息
+	Referer    string    `orm:"null;size(16)" json:",omitempty"`
+	RegisterID string    `orm:"null;size(32)" json:",omitempty"` // 用于给用户推送消息
 	//Groups     []*Group  `orm:"-" json:",omitempty"` // 用户的所在组织
+}
+
+func (u *User) TableName() string {
+	return "allsum_user"
 }
 
 func CreateUser(u *User) (err error) {
@@ -54,7 +58,12 @@ func CreateUserIfNotExist(u *User) (err error) {
 }
 
 func GetUsersByReferer(tel string) (list []*User, err error) {
-	_, err = NewOrm(ReadOnly).QueryTable("User").Filter("Referer", tel).All(&list)
+	_, err = NewOrm(ReadOnly).QueryTable("allsum_user").Filter("Referer", tel).All(&list)
+	return
+}
+
+func GetUserCountsByReferer(tel string) (c int64, err error) {
+	c, err = NewOrm(ReadOnly).QueryTable("allsum_user").Filter("Referer", tel).Count()
 	return
 }
 
@@ -64,7 +73,7 @@ func UpdateUser(u *User, fields ...string) (err error) {
 			"Gender", "Descp", "Address", "LoginTime",
 			"Tel", "UserName", "Password", "Mail", "Referer")
 	}
-	sql := fmt.Sprintf("update public.user set PARAMS where id = ?")
+	sql := fmt.Sprintf("update allsum_user set PARAMS where id = ?")
 
 	params, values := "", []interface{}{}
 	for _, f := range fields {
@@ -120,7 +129,7 @@ func DeleteUser(u *User) (err error) {
 
 func GetUserByTel(tel string) (u *User, err error) {
 	u = new(User)
-	err = NewOrm(ReadOnly).QueryTable("User").Filter("Tel", tel).One(u)
+	err = NewOrm(ReadOnly).QueryTable("allsum_user").Filter("Tel", tel).One(u)
 	return
 }
 

@@ -27,3 +27,18 @@ func AgentClients(tel string) (users []*model.User, err error) {
 	}
 	return
 }
+
+func AgentGetList() (list []*model.Agent, err error) {
+	list, err = model.GetAgentAll()
+	if err != nil {
+		return
+	}
+
+	for _, v := range list {
+		v.Account, _ = model.GetAccountByUserId(v.Uid)
+		v.User, _ = model.GetUser(v.Uid)
+		ct, _ := model.GetUserCountsByReferer(v.User.Tel)
+		v.ConsumNo = int(ct)
+	}
+	return
+}

@@ -21,7 +21,7 @@ type File struct {
 	Size       int       `json:"size,omitempty"`
 	Md5        string    `orm:"size(50)" json:"md5,omitempty"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)" json:",omitempty"`
-	Data       string    `orm:"type(text),null" json:"-"`
+	Data       string    `orm:"type(text);null" json:"-"`
 }
 
 type Document struct {

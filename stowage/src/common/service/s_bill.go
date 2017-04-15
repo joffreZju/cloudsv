@@ -30,3 +30,11 @@ func GetBillByIds(ids []int) (list []*model.Bill, err error) {
 	}
 	return
 }
+func CreateBill(b *model.Bill) (err error) {
+	err = model.InsertBill(b)
+	if err != nil {
+		beego.Error(err)
+		return errcode.ErrCreateBillFailed
+	}
+	return
+}

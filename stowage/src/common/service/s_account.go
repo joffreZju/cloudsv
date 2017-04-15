@@ -3,6 +3,8 @@ package service
 import (
 	"common/model"
 	"errors"
+
+	"github.com/astaxie/beego"
 )
 
 //建立资金账户
@@ -16,8 +18,8 @@ func GetAccount(uid int) (a *model.Account, err error) {
 }
 
 //个人充值，代理商收入
-func ChargeAccount(aid string, money int64) (err error) {
-	a, err := model.GetAccountByAccountNo(aid)
+func ChargeAccount(aid int, money int64) (err error) {
+	a, err := model.GetAccountById(aid)
 	if err != nil {
 		return err
 	}
@@ -55,5 +57,13 @@ func WithdrawDeposit(aid string, money int64) (err error) {
 	a.Banlance -= money
 	a.Withdraw += money
 	err = model.UpdateAccount(a, "Banlance", "Withdraw")
+	return
+}
+
+func GetAccountByUser(uid int) (a *model.Account, err error) {
+	a, err = model.GetAccountByUserId(uid)
+	if err != nil {
+		beego.Error("no account:", err)
+	}
 	return
 }

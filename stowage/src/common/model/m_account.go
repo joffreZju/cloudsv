@@ -4,7 +4,7 @@ import "github.com/astaxie/beego/orm"
 
 type Account struct {
 	Id        int    `orm:"pk;auto"`
-	AccountNo string `orm:"unique"` //
+	AccountNo string `orm:"unique;size(64)" json:"-"` //
 	Userid    int    //个人和企业id
 	UserType  int    //1 个人，2代理商，3企业
 	Banlance  int64  //账户余额
@@ -29,6 +29,12 @@ func CheckAccountExist(uid int, tp int) (b bool) {
 		b = true
 	}
 	b = false
+	return
+}
+
+func GetAccountById(id int) (a *Account, err error) {
+	a = &Account{Id: id}
+	err = orm.NewOrm().Read(a)
 	return
 }
 

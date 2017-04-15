@@ -19,10 +19,10 @@ const (
 
 //用户在本平台服务消费记录也存此
 type Bill struct {
-	Id          int   `orm:"auto;pk"`
-	User        *User `orm:"-" json:",omitempty"`
-	UserId      int   `json:"-"`
-	AccountId   int
+	Id          int      `orm:"auto;pk"`
+	User        *User    `orm:"-" json:",omitempty"`
+	UserId      int      `json:"-"`
+	AccountId   int      `jons:"-"`
 	Account     *Account `orm:"-" json:",omitempty"`
 	Order       *Order   `orm:"null;rel(one)" json:",omitempty"`
 	Type        int      //账单类型
