@@ -49,10 +49,10 @@ func LoadRouter() {
 	//代金券
 	beego.Router(ManagePrefix+"/coupon/input", &coupon.Controller{}, "POST:CouponCreate") //录入
 	beego.Router(ManagePrefix+"/coupon/grant", &coupon.Controller{}, "POST:GrantAgent")   //发放
-	beego.Router(ManagePrefix+"/coupon/recycle", &coupon.Controller{}, "POST:CouponRecycle")
+	beego.Router(ManagePrefix+"/coupon/recycle", &coupon.Controller{}, "Get:CouponRecycle")
 	beego.Router(UserPrefix+"/coupon/using", &coupon.Controller{}, "POST:CouponUsing")
 	beego.Router(ManagePrefix+"/coupon/info", &coupon.Controller{}, "Get:CouponInfo")
-	beego.Router(ManagePrefix+"/coupon/list", &coupon.Controller{}, "POST:CouponList")
+	beego.Router(ManagePrefix+"/coupon/list", &coupon.Controller{}, "Get:CouponList")
 
 	//订单交易
 	beego.Router(UserPrefix+"/order/pay", &order.Controller{}, "Get:PayOnline")
