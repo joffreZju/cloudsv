@@ -26,10 +26,10 @@ type User struct {
 	Descp      string    `orm:"null" json:",omitempty"`
 	Gender     int8      `orm:"null" json:",omitempty"`
 	Address    string    `orm:"null;size(64)" json:",omitempty"`
-	LoginTime  time.Time `orm:"type(datetime);null" json:",omitempty"`         //登录时间
+	LoginTime  time.Time `orm:"type(datetime);null" json:"-"`                  //登录时间
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)" json:",omitempty"` //
 	Mail       string    `orm:"null;size(64)" json:",omitempty"`
-	UserType   int       `orm:"default(1)" json:",omitempty"` //1 普通用户,2 代理商
+	UserType   int       `orm:"default(1)"` //1 普通用户,2 代理商
 	Referer    string    `orm:"null;size(16)" json:",omitempty"`
 	RegisterID string    `orm:"null;size(32)" json:",omitempty"` // 用于给用户推送消息
 	//Groups     []*Group  `orm:"-" json:",omitempty"` // 用户的所在组织
@@ -73,7 +73,6 @@ func UpdateUser(u *User, fields ...string) (err error) {
 			"Gender", "Descp", "Address", "LoginTime",
 			"Tel", "UserName", "Password", "Mail", "Referer")
 	}
-	sql := fmt.Sprintf("update allsum_user set PARAMS where id = ?")
 
 	params, values := "", []interface{}{}
 	for _, f := range fields {
@@ -106,8 +105,8 @@ func UpdateUser(u *User, fields ...string) (err error) {
 	if len(params) > 1 {
 		params = params[:len(params)-1]
 	}
+	sql := fmt.Sprintf("update allsum_user set PARAMS where id = ?")
 	sql = strings.Replace(sql, "PARAMS", params, 1)
-	fmt.Printf("---sql:%s\n--%s\n", sql, params)
 	result, err := NewOrm().Raw(sql, values...).Exec()
 	if err != nil {
 		return

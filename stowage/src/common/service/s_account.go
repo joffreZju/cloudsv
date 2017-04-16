@@ -63,7 +63,7 @@ func WithdrawDeposit(aid string, money int64) (err error) {
 func GetAccountByUser(uid int) (a *model.Account, err error) {
 	a, err = model.GetAccountByUserId(uid)
 	if err != nil {
-		beego.Error("no account:", err)
+		beego.Error(uid, err)
 	}
 	return
 }

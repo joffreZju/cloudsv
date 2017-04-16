@@ -24,7 +24,6 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	}
 	if r.Status == 3 {
 		return errcode.ErrCouponUsed
-
 	}
 	if r.Status != 1 {
 		return errcode.ErrCouponIllegal
@@ -35,6 +34,7 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	r.Status = 3
 	r.Userid = uid
 	r.UsedTime = time.Now()
+	beego.Debug("====================")
 
 	//TODO   事物管理
 	//创建交易订单
@@ -84,7 +84,7 @@ func AddCoupons(start, end int) (err error) {
 	charges := make([]model.Coupon, caps)
 	for i := 0; i < caps; i++ {
 		charges[i].Number = start + i
-		charges[i].VerifyCode = util.RandomByte6()
+		charges[i].VerifyCode = util.RandomByte6(i + start)
 		charges[i].Denomination = DefaultPrice
 		charges[i].Status = 0
 	}

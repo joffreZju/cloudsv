@@ -74,7 +74,7 @@ func InitPgSQL(key string) (err error) {
 
 	err = orm.RunSyncdb("default", false, true)
 
-	if beego.BConfig.RunMode != "prod" {
+	if beego.BConfig.RunMode == "prod" {
 		orm.Debug = false
 	} else {
 		orm.Debug = true

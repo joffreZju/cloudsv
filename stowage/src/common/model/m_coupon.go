@@ -33,7 +33,7 @@ func GrantCouponMulti(s, e int, aid int) (count int64, err error) {
 
 func GetCoupon(num int) (r *Coupon, err error) {
 	r = &Coupon{Number: num}
-	err = NewOrm(ReadOnly).Read(r)
+	err = NewOrm(ReadOnly).Read(r, "Number")
 	return
 }
 func VerifyCoupon(uid int, num int) (err error) {
@@ -56,7 +56,7 @@ func RecycleCouponByAgent(aid int) (err error) {
 
 func CouponList(aid int, page int) (count int, list []*Coupon, err error) {
 	o := orm.NewOrm()
-	if page == 1 {
+	if page == 0 {
 		var ct int64
 		ct, err = o.QueryTable("Coupon").Filter("Agentid", aid).Count()
 		if err != nil {
