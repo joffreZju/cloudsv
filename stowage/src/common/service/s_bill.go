@@ -8,10 +8,10 @@ import (
 )
 
 func GetBillsConsume(page int) ([]*model.Bill, error) {
-	return model.GetBillsByType(page, model.BillConsume)
+	return model.GetBillsByType(page, model.OrderConsume)
 }
 func GetBillsTopup(page int) ([]*model.Bill, error) {
-	return model.GetBillsByType(page, model.BillTopUp)
+	return model.GetBillsByType(page, model.OrderTopup)
 }
 
 func GetBill(bid int) (bill *model.Bill, err error) {

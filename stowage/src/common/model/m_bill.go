@@ -13,8 +13,7 @@ const (
 	BillChecked    = 2
 
 	//bill type
-	BillTopUp   = 1
-	BillConsume = 2
+	//same as order type
 )
 
 //用户在本平台服务消费记录也存此

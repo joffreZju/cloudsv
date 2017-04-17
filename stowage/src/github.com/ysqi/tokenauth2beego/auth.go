@@ -25,7 +25,6 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 
@@ -150,15 +149,15 @@ type Automatic struct {
 // Then find access_token from reqeust form field.
 // Returns effective token or error.
 func (a *Automatic) CheckToken(req *http.Request) (token *tokenauth.Token, err error) {
-
 	tokenString := ""
 	// Look for an Authorization header
 	if ah := req.Header.Get("Authorization"); len(ah) > 0 {
 		// Should be a access token
-		fieldLen := len(TokenFieldName)
-		if len(ah) > fieldLen+1 && ah[fieldLen] == ' ' && strings.HasPrefix(ah, TokenFieldName) {
-			tokenString = ah[fieldLen+1:]
-		}
+		//fieldLen := len(TokenFieldName)
+		//if len(ah) > fieldLen+1 && ah[fieldLen] == ' ' && strings.HasPrefix(ah, TokenFieldName) {
+		//	tokenString = ah[fieldLen+1:]
+		//
+		tokenString = ah
 	}
 
 	// Look for "access_token" parameter

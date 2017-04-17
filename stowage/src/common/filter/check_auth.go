@@ -76,9 +76,12 @@ func CheckAuthFilter(group string, notNeedAuthList []string) beego.FilterFunc {
 
 	return func(ctx *context.Context) {
 		path := ctx.Request.URL.Path
+		if ctx.Request.Method == "OPTIONS" {
+			return
+		}
 		if token, err := o2o.Auth.CheckToken(ctx.Request); err != nil {
 			if !noAuthMap[ctx.Request.URL.Path] {
-				beego.Debug("request to: ", path, err.Error(), "token:", token)
+				beego.Debug("request to: ", path, ctx.Request.Method, err.Error(), "token:", token)
 				o2o.Auth.ReturnFailueInfo(err, ctx)
 			}
 		} else {

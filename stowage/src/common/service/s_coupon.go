@@ -66,7 +66,7 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	b.Money = int64(DefaultPrice)
 	b.Time = time.Now().Format(model.TimeFormat)
 	b.Order = or
-	b.Type = model.BillTopUp
+	b.Type = model.OrderTopup
 	b.UserId = uid
 	b.AccountId = a.Id
 	CreateBill(b)

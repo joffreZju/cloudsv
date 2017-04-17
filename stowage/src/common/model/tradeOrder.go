@@ -29,7 +29,7 @@ const (
 
 	//order type
 	OrderTopup   = 1
-	OrderStowage = 2
+	OrderConsume = 2
 	//sub type
 	ConsumeStowage = 1
 )

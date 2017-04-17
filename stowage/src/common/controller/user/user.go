@@ -88,8 +88,10 @@ func (c *Controller) UserRegister() {
 		if err != nil {
 			beego.Error("create user account failed:", err)
 		}
-
-		c.ReplySucc("success")
+		jsonstr := make(map[string]interface{})
+		jsonstr["tel"] = tel
+		jsonstr["password"] = passwd
+		c.ReplySucc(jsonstr)
 	}
 }
 
@@ -133,7 +135,7 @@ func (c *Controller) UserLogin() {
 	user, err := service.GetUserByTel(tel)
 	if err != nil {
 		beego.Error(errcode.ErrUserNotExisted)
-		c.ReplyErr(errcode.ErrUserPasswordError)
+		c.ReplyErr(errcode.ErrUserNotExisted)
 		return
 	}
 	if !keycrypt.CheckSha256(passwd, user.Password) {

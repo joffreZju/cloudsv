@@ -36,17 +36,16 @@ func main() {
 		panic(err)
 	}
 
-	// load router
-	LoadRouter()
-
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		//AllowOrigins:     []string{"http://localhost:8090", "http://www.suanpeizaix.comw", "http://www.suanpeizaix.com:8090"},
-		AllowOrigins:     []string{"*"},
+		AllowAllOrigins:  true,
+		AllowHeaders:     []string{"Origin", "Authorization", "Access-Control-Allow-Origin", "uid", "Access-Control-Allow-Headers", "Content-Type"},
 		AllowMethods:     []string{"GET", "DELETE", "PUT", "PATCH", "POST", "OPTIONS"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
+		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
 		AllowCredentials: true,
 	}))
+	// load router
+	LoadRouter()
 
 	beego.Info("Init Server Begin..")
 	beego.Run()
