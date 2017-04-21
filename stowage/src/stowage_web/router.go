@@ -56,7 +56,7 @@ func LoadRouter() {
 	beego.Router(ManagePrefix+"/coupon/list", &coupon.Controller{}, "Get:CouponList")
 
 	//订单交易
-	beego.Router(UserPrefix+"/order/pay", &order.Controller{}, "Get:PayOnline")
+	beego.Router(UserPrefix+"/order/pay", &order.Controller{}, "Post:PayOnline")
 	beego.Router(ManagePrefix+"/order/info", &order.Controller{}, "Get:OrderInfo")
 	beego.Router(ManagePrefix+"/order/list_day", &order.Controller{}, "Get:OrderDay")
 

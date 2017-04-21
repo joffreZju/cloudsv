@@ -101,6 +101,7 @@ func TransPayOnline(or *Order) (err error) {
 		o.Rollback()
 		return
 	}
+	err = o.Commit()
 
 	return
 }

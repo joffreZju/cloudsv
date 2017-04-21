@@ -12,7 +12,7 @@ var (
 	key            = "2720c6250e4c35247ec02bd1e67f1a2d"
 	appSecret      = ""
 	notifyUrl      = "http://wxapi.suanpeizi.com/notify/wxpay"
-	debugNotifyUrl = "http://106.14.38.116:8081/notify/wxpay"
+	debugNotifyUrl = "http://106.14.38.116:8090/notify/wxpay"
 )
 
 var Pay *wxisv.Pay
