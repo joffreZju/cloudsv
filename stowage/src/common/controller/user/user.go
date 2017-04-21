@@ -41,10 +41,12 @@ func (c *Controller) UserRegister() {
 	addr := c.GetString("address")
 	mail := c.GetString("mail")
 	referer := c.GetString("referer")
-	var a *model.User
+
+	var ag *model.User
+	var err error
 	if len(referer) > 0 {
-		a, err := model.GetUserByTel(referer)
-		if err != nil || a.UserType != 2 {
+		ag, err = model.GetUserByTel(referer)
+		if err != nil || ag.UserType != 2 {
 			c.ReplyErr(errcode.ErrAgentNotExisted)
 			return
 		}
@@ -53,7 +55,6 @@ func (c *Controller) UserRegister() {
 	passwdc := keycrypt.Sha256Cal(passwd)
 	beego.Debug("tel:", tel)
 	var code int
-	var err error
 	if code, err = strconv.Atoi(c.GetString("code")); err != nil {
 		beego.Error("user.regist error:", err)
 		c.ReplyErr(errcode.ErrAuthCodeError)
@@ -67,6 +68,12 @@ func (c *Controller) UserRegister() {
 		c.ReplyErr(errcode.ErrAuthCodeError)
 		return
 	} else {
+		var auid int
+		if ag != nil {
+			auid = ag.Id
+		} else {
+			auid = 0
+		}
 		u := model.User{
 			Tel:      tel,
 			Password: passwdc,
@@ -75,7 +82,7 @@ func (c *Controller) UserRegister() {
 			Address:  addr,
 			Mail:     mail,
 			Referer:  referer,
-			AgentUid: a.Id,
+			AgentUid: auid,
 			UserType: 1,
 			//CreateTime: time.Now(),
 		}
