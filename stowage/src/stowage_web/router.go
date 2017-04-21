@@ -24,7 +24,7 @@ func LoadRouter() {
 	// aliyu 健康检测
 	//beego.Router("/health", &maincontroller.Controller{}, "*:Check")
 	//wxpay callback
-	beego.Router("/notify/wxpay", &order.Controller{}, "Post:WxPay")
+	beego.Router("/notify/wxpay", &order.Controller{}, "Post:WxPayback")
 
 	// user 相关
 	beego.Router(ExemptPrefix+"/user/getcode", &user.Controller{}, "*:GetCode")
@@ -35,6 +35,7 @@ func LoadRouter() {
 	beego.Router(UserPrefix+"/info", &user.Controller{}, "*:GetUserInfo")
 	beego.Router(UserPrefix+"/passwd/modify", &user.Controller{}, "*:Resetpwd")
 	beego.Router(UserPrefix+"/edit_profile", &user.Controller{}, "*:EditProfile")
+	beego.Router(ExemptPrefix+"/passwd/retrieve", &user.Controller{}, "Post:Retrievepwd")
 
 	//用户的账户
 	beego.Router(UserPrefix+"/account/info", &account.Controller{}, "Get:AccountInfo")

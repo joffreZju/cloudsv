@@ -59,12 +59,16 @@ func (c *Controller) AgentCreate() {
 
 //获取代理商列表
 func (c *Controller) AgentList() {
-	list, err := service.AgentGetList()
+	page, _ := c.GetInt("page")
+	tot, list, err := service.AgentGetList(page)
 	if err != nil {
 		c.ReplyErr(err)
 		return
 	}
-	c.ReplySucc(list)
+	c.ReplySucc(map[string]interface{}{
+		"total":  tot,
+		"agents": list,
+	})
 }
 
 //代理商获取客户列表

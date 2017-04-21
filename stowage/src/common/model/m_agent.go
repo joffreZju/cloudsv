@@ -14,6 +14,7 @@ type Agent struct {
 	LicenseFile string    `orm:"size(64)"`
 	Status      int       `orm:"default(1)"` //1 正常，2 禁用
 	Desc        string    `orm:"null"`
+	Discount    int       `orm:"default(50)"` //折扣率，百分比
 	CreateTime  time.Time `orm:"auto_now_add;type(datetime)"`
 	Consumers   []*User   `orm:"-" json:",omitempty"`
 	ConsumNo    int       `orm:"-"`
@@ -47,6 +48,17 @@ func AgentUpdate(a *Agent) (err error) {
 	return err
 }
 
+func GetAgentFromClient(uid int) (a *Agent, err error) {
+	o := NewOrm(ReadOnly)
+	u := &User{Id: uid}
+	err = o.Read(u)
+	if err != nil || u.AgentUid == 0 {
+		return nil, fmt.Errorf("no agent of user:%d", uid)
+	}
+	a, err = GetAgentInfo(u.AgentUid)
+	return
+}
+
 func GetAgentInfo(uid int) (a *Agent, err error) {
 	o := NewOrm(ReadOnly)
 	a = new(Agent)
@@ -61,8 +73,16 @@ func GetAgentInfo(uid int) (a *Agent, err error) {
 	return
 }
 
-func GetAgentAll() (list []*Agent, err error) {
+func GetAgentList(page int) (total int, list []*Agent, err error) {
 	o := NewOrm(ReadOnly)
-	_, err = o.QueryTable("agent").All(&list)
+	if page == 0 {
+		var ct int64
+		ct, err = o.QueryTable("agent").Count()
+		if err != nil {
+			return
+		}
+		total = int(ct)
+	}
+	_, err = o.QueryTable("agent").Limit(20).Offset(page * 20).OrderBy("Id").All(&list)
 	return
 }

@@ -34,8 +34,57 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	r.Status = 3
 	r.Userid = uid
 	r.UsedTime = time.Now()
-	beego.Debug("====================")
 
+	agent, err := model.GetAgentFromClient(uid)
+	if err != nil {
+		beego.Info("no find agent:", err)
+		agent = nil
+	}
+	or := new(model.Order)
+	or.Status = int(model.YiUserOrder)
+	or.ProcessStatus = model.OrderWaitProcess
+	or.PaidType = model.PCoupon
+	or.Orderid = util.GetTradeNo(model.PCoupon, uid)
+	or.Price = int64(DefaultPrice)
+	or.OrderType = model.OrderTopup
+	if agent != nil {
+		or.AgentSharing = or.Price * int64(agent.Discount) / 100
+		or.Agent = agent
+	}
+	err = model.TransCouponUsing(or, r, agent)
+	if err != nil {
+		beego.Error(err)
+		return
+	}
+	return
+}
+
+/*
+func UsingCoupon(num int, uid int, code string) (err error) {
+	r, err := model.GetCoupon(num)
+	if err != nil {
+		beego.Error(err)
+		return errcode.ErrCouponNotExist
+	}
+	if r.Status == 3 {
+		return errcode.ErrCouponUsed
+	}
+	if r.Status != 1 {
+		return errcode.ErrCouponIllegal
+	}
+	if r.VerifyCode != code {
+		return errcode.ErrCouponVerify
+	}
+	r.Status = 3
+	r.Userid = uid
+	r.UsedTime = time.Now()
+
+	var sharing bool = true
+	agent, err := model.GetAgentFromClient(uid)
+	if err != nil {
+		beego.Info("no find agent:", err)
+		sharing = false
+	}
 	//TODO   事物管理
 	//创建交易订单
 	or := new(model.Order)
@@ -45,6 +94,10 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	or.Orderid = util.GetTradeNo(model.PCoupon, uid)
 	or.Price = int64(DefaultPrice)
 	or.OrderType = model.OrderTopup
+	if sharing {
+		or.AgentSharing = or.Price * int64(agent.Discount) / 100
+		or.Agent = agent
+	}
 	err = CreateOrder(or)
 	if err != nil {
 		beego.Error("create order failed", err)
@@ -70,11 +123,12 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	b.UserId = uid
 	b.AccountId = a.Id
 	CreateBill(b)
-	//更新资金账户
+	//更新用户资金账户
 	ChargeAccount(a.Id, b.Money)
+	//更新代理商账户
 
 	return
-}
+}*/
 
 func AddCoupons(start, end int) (err error) {
 	caps := end - start

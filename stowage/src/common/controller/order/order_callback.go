@@ -6,12 +6,11 @@ import (
 	"common/service"
 	"encoding/xml"
 	"fmt"
-	"time"
 
 	"github.com/astaxie/beego"
 )
 
-func (c *Controller) WxPay() {
+func (c *Controller) WxPayback() {
 	body := c.Ctx.Input.RequestBody
 	if len(body) == 0 {
 		body = c.Ctx.Input.CopyBody(beego.BConfig.MaxMemory)
@@ -67,29 +66,32 @@ func (c *Controller) orderPayCallback(orderId, payOrderId string, payType int, b
 	}
 	order.PayOrderId = payOrderId
 	order.Status = model.YiPaid
-	order.UpdateProcessStatus()
+	//order.UpdateProcessStatus()
 	order.PaidType = payType
 	order.PaidBankType = bankType
-	service.GetOrderMoreDetail(order, "DiscountItems", "Bill")
-	// 创建支付账单
-	if order.Bill == nil {
-		//创建账单
-
-		// 更新定单账单信息
-
-		// 更新用户账户余额
-
-	} else {
-		// TODO 已经有支付账单了，有问题
+	err = model.TransPayOnline(order)
+	if err != nil {
+		return
 	}
+
+	//service.GetOrderMoreDetail(order, "Bill")
+	// 创建支付账单
+	//if order.Bill == nil {
+	//创建账单
+
+	// 更新定单账单信息
+
+	// 更新用户账户余额
+
+	//} else {
+	// TODO 已经有支付账单了，有问题
+	//}
 	// 插入到订单信息表
-	orderStatus := new(model.OrderStatus)
-
-	orderStatus.Status = model.YiPaid
-	orderStatus.Time = time.Now().Format(model.TimeFormat)
-	orderStatus.Order = order
+	//orderStatus := new(model.OrderStatus)
+	//orderStatus.Status = model.YiPaid
+	//orderStatus.Time = time.Now().Format(model.TimeFormat)
+	//orderStatus.Order = order
 	//service.CreateOrderStatus(orderStatus)
-
 	beego.Info("success: ", order.Orderid)
 
 	return nil

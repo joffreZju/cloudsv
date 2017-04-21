@@ -31,6 +31,7 @@ type User struct {
 	Mail       string    `orm:"null;size(64)" json:",omitempty"`
 	UserType   int       `orm:"default(1)"` //1 普通用户,2 代理商
 	Referer    string    `orm:"null;size(16)" json:",omitempty"`
+	AgentUid   int       `orm:"null" json:"-"`
 	RegisterID string    `orm:"null;size(32)" json:",omitempty"` // 用于给用户推送消息
 	//Groups     []*Group  `orm:"-" json:",omitempty"` // 用户的所在组织
 }
@@ -47,14 +48,33 @@ func CreateUser(u *User) (err error) {
 	u.Id = int(id)
 	return
 }
-func CreateUserIfNotExist(u *User) (err error) {
+
+func CreateOrUpdateAuser(u *User) (err error) {
 	u.CreateTime = time.Now()
-	_, id, err := orm.NewOrm().ReadOrCreate(u, "tel")
-	if err != nil {
-		return
+	o := orm.NewOrm()
+	us := new(User)
+	err = o.QueryTable("allsum_user").Filter("Tel", u.Tel).One(us)
+	if err == orm.ErrNoRows {
+		//insert
+		var id int64
+		id, err = o.Insert(u)
+		if err != nil {
+			return
+		}
+		u.Id = int(id)
+	} else if err == nil {
+		//update
+		us.UserType = 2
+		u.Id = us.Id
+		_, err = o.Update(us)
 	}
-	u.Id = int(id)
 	return
+	//_, id, err := orm.NewOrm().ReadOrCreate(u, "tel")
+	//if err != nil {
+	//	return
+	//}
+	//u.Id = int(id)
+	//return
 }
 
 func GetUsersByReferer(tel string) (list []*User, err error) {

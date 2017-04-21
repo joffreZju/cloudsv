@@ -8,7 +8,11 @@ import (
 )
 
 func AgentCreate(a *model.Agent) (err error) {
-	err = model.CreateUserIfNotExist(a.User)
+	err = model.CreateOrUpdateAuser(a.User)
+	if err != nil {
+		beego.Error(err)
+		return
+	}
 	a.Uid = a.User.Id
 	err = model.InsertAgent(a)
 	if err != nil {
@@ -28,9 +32,10 @@ func AgentClients(tel string) (users []*model.User, err error) {
 	return
 }
 
-func AgentGetList() (list []*model.Agent, err error) {
-	list, err = model.GetAgentAll()
+func AgentGetList(page int) (total int, list []*model.Agent, err error) {
+	total, list, err = model.GetAgentList(page)
 	if err != nil {
+		beego.Error(err)
 		return
 	}
 

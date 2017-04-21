@@ -1,5 +1,7 @@
 package service
 
+import "common/service/wxisv"
+
 func Init() error {
-	return nil
+	return wxisv.Init()
 }

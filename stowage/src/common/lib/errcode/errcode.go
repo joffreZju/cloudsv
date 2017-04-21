@@ -45,6 +45,9 @@ var (
 
 	ErrCreateOrderFailed       = &CodeError{20131, "创建订单失败"}
 	ErrCreateOrderStatusFailed = &CodeError{20132, "创建订单状态失败"}
+	ErrNoOrder                 = &CodeError{20133, "没有此订单"}
+	ErrWXPay                   = &CodeError{20133, "微信支付暂不可用"}
+	ErrALIPay                  = &CodeError{20134, "支付宝支付暂不可用"}
 	ErrGetBillFailed           = &CodeError{20140, "获取账单失败"}
 	ErrCreateBillFailed        = &CodeError{20141, "创建账单失败"}
 
@@ -57,7 +60,7 @@ var (
 	ErrCouponVerify   = &CodeError{20157, "核销码错误"}
 	ErrCouponUsed     = &CodeError{20158, "代金券已使用"}
 	ErrCouponIllegal  = &CodeError{20159, "非法券"}
-	ErrCouponNotExist = &CodeError{20159, "券不存在"}
+	ErrCouponNotExist = &CodeError{20160, "券不存在"}
 )
 
 func ParseError(err error) (code int, msg string) {

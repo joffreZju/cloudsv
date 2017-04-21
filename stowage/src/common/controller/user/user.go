@@ -22,7 +22,7 @@ type Controller struct {
 	base.Controller
 }
 
-var AllsumUserList = []string{"15158134537"}
+var AllsumUserList = []string{"15158134537", "15558085697"}
 
 func getGroup(tel string) int {
 	for _, v := range AllsumUserList {
@@ -41,6 +41,14 @@ func (c *Controller) UserRegister() {
 	addr := c.GetString("address")
 	mail := c.GetString("mail")
 	referer := c.GetString("referer")
+	var a *model.User
+	if len(referer) > 0 {
+		a, err := model.GetUserByTel(referer)
+		if err != nil || a.UserType != 2 {
+			c.ReplyErr(errcode.ErrAgentNotExisted)
+			return
+		}
+	}
 
 	passwdc := keycrypt.Sha256Cal(passwd)
 	beego.Debug("tel:", tel)
@@ -67,6 +75,7 @@ func (c *Controller) UserRegister() {
 			Address:  addr,
 			Mail:     mail,
 			Referer:  referer,
+			AgentUid: a.Id,
 			UserType: 1,
 			//CreateTime: time.Now(),
 		}
@@ -161,6 +170,44 @@ func (c *Controller) UserLogin() {
 		return
 	}
 
+}
+
+func (c *Controller) Retrievepwd() {
+	tel := c.GetString("tel")
+	user, err := service.GetUserByTel(tel)
+	if err != nil {
+		beego.Error(errcode.ErrUserNotExisted)
+		c.ReplyErr(errcode.ErrUserNotExisted)
+		return
+	}
+
+	var code int
+	if code, err = strconv.Atoi(c.GetString("code")); err != nil {
+		beego.Error("user.login error:", err)
+		c.ReplyErr(errcode.ErrAuthCodeError)
+		return
+	}
+	vcode := c.Cache.Get(tel)
+	if vcode == nil {
+		c.ReplyErr(errcode.ErrAuthCodeExpired)
+		return
+	} else if v, _ := strconv.Atoi(fmt.Sprintf("%s", vcode)); v != code {
+		c.ReplyErr(errcode.ErrAuthCodeError)
+		return
+	} else {
+		pwd := c.GetString("password")
+		pwdc := keycrypt.Sha256Cal(pwd)
+		user.Password = pwdc
+		err = service.UserUpdate(user, "Password")
+		if err != nil {
+			c.ReplyErr(err)
+			return
+		}
+		retstr := make(map[string]interface{})
+		retstr["tel"] = tel
+		retstr["password"] = pwd
+		c.ReplySucc(retstr)
+	}
 }
 
 func (c *Controller) UserLoginPhoneCode() {

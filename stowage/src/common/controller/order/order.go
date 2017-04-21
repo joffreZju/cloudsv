@@ -11,4 +11,5 @@ type Controller struct {
 func (c *Controller) OrderInfo() {
 
 }
-func (c *Controller) OrderDay() {}
+func (c *Controller) OrderDay() {
+}

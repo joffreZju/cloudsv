@@ -4,36 +4,55 @@ import (
 	"common/lib/errcode"
 	"common/model"
 	"common/service"
+	"common/service/wxisv"
 	"time"
 
 	"github.com/astaxie/beego"
 )
 
 func (c *Controller) PayOnline() {
-	userid := int(c.UserID)
-	//price, _ := c.GetInt64("price")
-	orderType, _ := c.GetInt("order_type")
-	if userid == 0 {
+	pro := c.GetString("provider")
+	money, _ := c.GetInt64("money")
+	if pro != "wx" || money <= 0 {
 		c.ReplyErr(errcode.ErrParams)
 		return
 	}
-	user, err := model.GetUser(userid)
+	uid := int(c.UserID)
+	user, err := service.GetUserInfo(uid)
 	if err != nil {
 		c.ReplyErr(err)
 		return
 	}
-	orderStatus := new(model.OrderStatus)
-	status := model.YiWaitPayCanCancel
-	orderStatus.Msg = "请在30分钟内完成支付"
-	orderStatus.Status = status
-	orderStatus.Time = time.Now().Format(model.TimeFormat)
 
-	order := &model.Order{
-		User:      user,
-		Orderid:   service.GetTradeNO(4, userid),
-		OrderType: orderType,
-		Time:      time.Now().Format(model.TimeFormat),
-		Status:    status,
+	if pro == "wx" {
+		//微信下单接口
+		or := new(model.Order)
+		or.Status = model.YiUserOrder
+		or.PaidType = model.PwxPay
+		or.Price = money * 100
+		or.OrderType = model.OrderTopup
+		or.Uid = uid
+		or.Orderid = service.GetTradeNO(or.OrderType, or.Uid)
+		or.Desc = "AllSum服务预付费"
+		or.User = user
+		or.Time = time.Now().Format(model.TimeFormat)
+		beego.Debug(or)
+
+		err = service.CreateOrder(or)
+		if err != nil {
+			c.ReplyErr(err)
+			return
+		}
+		reply, err := wxisv.Pay.QrPay(or.Orderid, or.Desc, or.Price)
+		if err != nil || len(reply.CodeUrl) == 0 {
+			beego.Error("weixin qrpay failed:", err)
+			c.ReplyErr(errcode.ErrWXPay)
+			return
+		}
+		c.ReplySucc(reply.CodeUrl)
+
+	} else {
+		//ali支付接口
 	}
-	beego.Debug(order)
+	return
 }

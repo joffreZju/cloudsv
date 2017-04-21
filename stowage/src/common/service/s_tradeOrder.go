@@ -21,11 +21,19 @@ func GetTradeNO(orderType int, userId int) string {
 
 func GetOrderByOrderId(orderId string) (order *model.Order, err error) {
 	order, err = model.GetOrderByOrderId(orderId)
+	if err != nil {
+		beego.Error("get order failed:", orderId, err)
+		err = errcode.ErrNoOrder
+	}
 	return
 }
 
 func CreateOrder(o *model.Order) (err error) {
 	err = model.CreateOrder(o)
+	if err != nil {
+		beego.Error("create Order failed:", err)
+		err = errcode.ErrCreateOrderFailed
+	}
 	return
 }
 
