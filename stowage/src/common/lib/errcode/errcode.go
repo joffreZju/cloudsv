@@ -61,6 +61,8 @@ var (
 	ErrCouponUsed     = &CodeError{20158, "代金券已使用"}
 	ErrCouponIllegal  = &CodeError{20159, "非法券"}
 	ErrCouponNotExist = &CodeError{20160, "券不存在"}
+
+	ErrNoTpl = &CodeError{20170, "模板不存在"}
 )
 
 func ParseError(err error) (code int, msg string) {

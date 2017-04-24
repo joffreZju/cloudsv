@@ -32,22 +32,6 @@ func GetTemplate(uid int) (t *CalTemplate, err error) {
 
 }
 
-type CarSummary struct {
-	Id           int       `orm:"column(id);auto;pk"`
-	CalRecordId  int       `orm:"column(cal_record_id);null"`
-	CalTimes     int       `orm:"column(cal_times);null"`
-	UserId       int       `orm:"column(user_id);null"`
-	CarNo        string    `orm:"column(car_no);null"`
-	MaxVolume    float64   `orm:"column(max_volume);null"`
-	MaxWeight    float64   `orm:"column(max_weight);null"`
-	TotalMoney   float64   `orm:"column(total_money);null"`
-	TotalWeight  float64   `orm:"column(total_weight);null"`
-	TotalVolume  float64   `orm:"column(total_volume);null"`
-	StowageRatio float64   `orm:"column(stowage_ratio);null"`
-	Ctt          time.Time `orm:"column(ctt);type(timestamp with time zone);null"`
-	Utt          time.Time `orm:"column(utt);type(timestamp with time zone);null"`
-}
-
 type CalRecord struct {
 	Id        int    `orm:"column(id);auto;pk"`
 	UserId    int    `orm:"column(user_id);"`
@@ -63,44 +47,20 @@ type CalRecord struct {
 	Utt     time.Time `orm:"column(utt);type(timestamp with time zone);null"`
 }
 
-func InsertOrUpdateRec(r *CalRecord) (err error) {
-	o := orm.NewOrm()
-	err = o.QueryTable("CalRecord").Filter("CalNo", r.CalNo).One(r)
-	if err == orm.ErrNoRows {
-		id, err = o.Insert(r)
-		if err != nil {
-			return
-		}
-		r.Id = int(id)
-		return
-	} else if err == nil {
-		_, err = o.Update(r)
-	}
-	return
-}
-
-func InsertCars(cs []*CarSummary) (err error) {
-	o := orm.NewOrm()
-	for _v := range cs {
-		id, err := o.Insert(v)
-		if err != nil {
-			return
-		}
-		v.Id = int(id)
-	}
-	return
-}
-
-func InsertGoods(gs []*CalGoods) (err error) {
-	o := orm.NewOrm()
-	for _v := range gs {
-		id, err := o.Insert(v)
-		if err != nil {
-			return
-		}
-		v.Id = int(id)
-	}
-	return
+type CarSummary struct {
+	Id           int       `orm:"column(id);auto;pk"`
+	CalRecordId  int       `orm:"column(cal_record_id);null"`
+	CalTimes     int       `orm:"column(cal_times);null"`
+	UserId       int       `orm:"column(user_id);null"`
+	CarNo        string    `orm:"column(car_no);null"`
+	MaxVolume    float64   `orm:"column(max_volume);null"`
+	MaxWeight    float64   `orm:"column(max_weight);null"`
+	TotalMoney   float64   `orm:"column(total_money);null"`
+	TotalWeight  float64   `orm:"column(total_weight);null"`
+	TotalVolume  float64   `orm:"column(total_volume);null"`
+	StowageRatio float64   `orm:"column(stowage_ratio);null"`
+	Ctt          time.Time `orm:"column(ctt);type(timestamp with time zone);null"`
+	Utt          time.Time `orm:"column(utt);type(timestamp with time zone);null"`
 }
 
 type CalGoods struct {
@@ -120,6 +80,47 @@ type CalGoods struct {
 	CalResult      string    `orm:"column(cal_result);null"` //保存计算结果,车牌号
 	Ctt            time.Time `orm:"column(ctt);type(timestamp with time zone);null"`
 	Utt            time.Time `orm:"column(utt);type(timestamp with time zone);null"`
+}
+
+func InsertOrUpdateRec(o orm.Ormer, r *CalRecord) (err error) {
+	//o := orm.NewOrm()
+	err = o.QueryTable("CalRecord").Filter("CalNo", r.CalNo).One(r)
+	if err == orm.ErrNoRows {
+		var id int64
+		id, err = o.Insert(r)
+		if err != nil {
+			return
+		}
+		r.Id = int(id)
+		return
+	} else if err == nil {
+		_, err = o.Update(r)
+	}
+	return
+}
+
+func InsertCars(o orm.Ormer, cs []*CarSummary) (err error) {
+	//o := orm.NewOrm()
+	for _, v := range cs {
+		id, err := o.Insert(v)
+		if err != nil {
+			return
+		}
+		v.Id = int(id)
+	}
+	return
+}
+
+func InsertGoods(o orm.Ormer, gs []*CalGoods) (err error) {
+	//o := orm.NewOrm()
+	for _, v := range gs {
+		id, err := o.Insert(v)
+		if err != nil {
+			return
+		}
+		v.Id = int(id)
+	}
+	return
 }
 
 func (t *CarSummary) TableName() string {

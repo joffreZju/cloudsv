@@ -2,3 +2,6 @@
 stowage/bin
 stowage/log
 stowage/pkg
+.DS_Store
+stowage/.DS_Store
+.gitignore
