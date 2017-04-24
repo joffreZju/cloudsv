@@ -51,6 +51,14 @@ func UpdateOrder(o *model.Order, fields ...string) (err error) {
 	return
 }
 
+func GetOrdersSubtp(page, limit, stp int) (ct int64, list []*model.Order, err error) {
+	ct, list, err = model.GetPaidOrdersStp(page, limit, stp)
+	if err != nil {
+		beego.Error(err)
+	}
+	return
+}
+
 func GetOrderMoreDetail(order *model.Order, fields ...string) (err error) {
 	newFields := []string{}
 	for _, f := range fields {

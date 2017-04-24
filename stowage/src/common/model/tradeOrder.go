@@ -7,17 +7,6 @@ import (
 )
 
 const (
-	//PaidType
-	PwxPay  = 1
-	PaliPay = 2
-	PCoupon = 3
-
-	//process status
-	OrderWaitProcess = 0 // 待处理
-	OrderProcessing  = 1 // 处理中
-	OrderFinished    = 2 // 处理完成
-	OrderCanceled    = 3 // 取消
-
 	//order status
 	YiUserOrder        = iota // 0 创建订单
 	YiCancel                  //取消
@@ -27,11 +16,23 @@ const (
 	YiPayBack                 //退款
 	YiPayBackFinish           //推款成功
 
+)
+
+const (
+	//process status
+	OrderWaitProcess = 0 // 待处理
+	OrderProcessing  = 1 // 处理中
+	OrderFinished    = 2 // 处理完成
+	OrderCanceled    = 3 // 取消
+
 	//order type
 	OrderTopup   = 1
 	OrderConsume = 2
 	//sub type
-	ConsumeStowage = 1
+	PwxPay   = 1
+	PaliPay  = 2
+	PCoupon  = 3
+	CStowage = 4
 )
 
 type OrderStatus struct {
@@ -45,25 +46,27 @@ type OrderStatus struct {
 
 //用户平台内消费也存于此
 type Order struct {
-	Id            int    `orm:"auto;pk"`
-	Orderid       string `orm:"unique"`
-	PayOrderId    string `orm:"null" json:,omitempty`
-	CreateTime    string `orm:"auto_now_add;type(datetime)"`
-	Status        int    `json:,omitempty`
-	ProcessStatus int    `json:,omitempty`
-	PaidType      int    `json:",omitempty`             //支付方式，渠道
-	Price         int64  `json:,omitempty`              //用户支付金额
-	AgentSharing  int64  `orm:"null" json:,omitempty`   //代理商分成
-	Desc          string `orm:"null" json:",omitempty"` //备注信息
-	Remark        string `orm:"null" json:",omitempty"` //附加信息
-	PaidBankType  string `orm:"null" json:",omitempty"` // 银行卡类型, 微信支付有
-	OrderType     int    `json:",omitempty"`            //1.充值2.消费
-	SubType       int    `orm:"null" json:",omitempty"` //1.算配载 2.算路由
-	Time          string `json:"-"`                     // 下单时间
-	User          *User  `orm:"-" json:",omitempty"`
-	Uid           int    `json:"-"`
-	Bill          *Bill  `orm:"reverse(one);column(bill_id)" json:",omitempty"`
-	Agent         *Agent `orm:"rel(fk);null;column(agent_id)" json:",omitempty"`
+	Id         int    `orm:"auto;pk"`
+	OrderNo    string `orm:"unique"`
+	PayOrderId string `orm:"null" json:,omitempty`
+	//CreateTime    time.Time `orm:"auto_now_add;type(dateime)"`
+	Status        int `json:,omitempty`
+	ProcessStatus int `json:,omitempty`
+	//PaidType      int       `json:",omitempty`             //支付方式，渠道
+	Price        int64   `json:,omitempty`              //用户支付金额
+	AgentSharing int64   `orm:"null" json:,omitempty`   //代理商分成
+	Desc         string  `orm:"null" json:",omitempty"` //备注信息
+	Remark       string  `orm:"null" json:",omitempty"` //附加信息
+	PaidBankType string  `orm:"null" json:",omitempty"` // 银行卡类型, 微信支付有
+	OrderType    int     `json:",omitempty"`            //1.充值2.消费
+	SubType      int     `json:",omitempty"`            //支付方式+消费商品
+	Time         string  `json:"-"`                     // 下单时间
+	User         *User   `orm:"-" json:",omitempty"`
+	Uid          int     `json:"-"`
+	Bill         *Bill   `orm:"reverse(one);column(bill_id)" json:",omitempty"`
+	Agent        *Agent  `orm:"rel(fk);null;column(agent_id)" json:",omitempty"`
+	CouponId     int     `orm:"null" json:",omitempty"`
+	Coupon       *Coupon `orm:"-"`
 }
 
 func (u *Order) TableName() string {
@@ -84,6 +87,19 @@ func (o *Order) UpdateProcessStatus() {
 		o.ProcessStatus = OrderProcessing
 	}
 
+}
+
+func GetPaidOrdersStp(page, limit, stp int) (ct int64, list []*Order, err error) {
+	o := orm.NewOrm()
+	if page == 0 {
+		ct, err = o.QueryTable("allsum_order").Filter("SubType", stp).Filter("Status", YiPaid).Count()
+		if err != nil {
+			return
+		}
+	}
+	_, err = o.QueryTable("Bill").Filter("type", stp).Filter("Status", YiPaid).
+		OrderBy("-Id").Limit(limit).Offset(page * limit).All(&list)
+	return
 }
 
 func GetPaidOrderOfToday(aid int) (list []*Order, err error) {

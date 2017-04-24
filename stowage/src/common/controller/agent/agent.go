@@ -35,6 +35,7 @@ func (c *Controller) AgentCreate() {
 		Name:        name,
 		User:        &u,
 		Status:      1,
+		Discount:    50,
 	}
 	err := service.AgentCreate(&a)
 	if err != nil {
@@ -105,7 +106,12 @@ func (c *Controller) AgentModify() {
 		c.ReplyErr(errcode.ErrParams)
 		return
 	}
-	status, _ := c.GetInt("status")
+	status, err := c.GetInt("status")
+	if err != nil {
+		beego.Error("parameters error:", err)
+		c.ReplyErr(errcode.ErrParams)
+		return
+	}
 	licenseFile := c.GetString("licenseFile")
 	desc := c.GetString("desc")
 	a := model.Agent{

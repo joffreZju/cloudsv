@@ -90,10 +90,32 @@ func GetBillsByUser(id, page int) (list []*Bill, err error) {
 }
 
 //根据账单类型获取列表，分页
-func GetBillsByType(page, tp int) (list []*Bill, err error) {
-	_, err = orm.NewOrm().QueryTable("Bill").Filter("type", tp).
-		OrderBy("-TIme").Limit(30).Offset(page * 30).All(&list)
+func GetBillsByType(page, offset, tp int) (cn int64, list []*Bill, err error) {
+	o := orm.NewOrm()
+	if page == 0 {
+		cn, err = o.QueryTable("Bill").Filter("type", tp).Count()
+		if err != nil {
+			return
+		}
+	}
+	_, err = o.QueryTable("Bill").Filter("type", tp).
+		OrderBy("-Id").Limit(offset).Offset(page * offset).All(&list)
 	return
+}
+
+//根据子类型获取列表
+func GetBillsBySubType(page, offset, stp int) (cn int64, list []*Bill, err error) {
+	o := orm.NewOrm()
+	if page == 0 {
+		cn, err = o.QueryTable("Bill").Filter("SubType", stp).Count()
+		if err != nil {
+			return
+		}
+	}
+	_, err = o.QueryTable("Bill").Filter("SubType", stp).
+		OrderBy("-Id").Limit(offset).Offset(page * offset).All(&list)
+	return
+
 }
 
 //更新bill

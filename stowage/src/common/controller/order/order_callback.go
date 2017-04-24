@@ -67,7 +67,7 @@ func (c *Controller) orderPayCallback(orderId, payOrderId string, payType int, b
 	order.PayOrderId = payOrderId
 	order.Status = model.YiPaid
 	//order.UpdateProcessStatus()
-	order.PaidType = payType
+	order.SubType = payType
 	order.PaidBankType = bankType
 	err = model.TransPayOnline(order)
 	if err != nil {
@@ -92,7 +92,7 @@ func (c *Controller) orderPayCallback(orderId, payOrderId string, payType int, b
 	//orderStatus.Time = time.Now().Format(model.TimeFormat)
 	//orderStatus.Order = order
 	//service.CreateOrderStatus(orderStatus)
-	beego.Info("success: ", order.Orderid)
+	beego.Info("success: ", order.OrderNo)
 
 	return nil
 }

@@ -43,8 +43,9 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	or := new(model.Order)
 	or.Status = int(model.YiUserOrder)
 	or.ProcessStatus = model.OrderWaitProcess
-	or.PaidType = model.PCoupon
-	or.Orderid = util.GetTradeNo(model.PCoupon, uid)
+	or.SubType = model.PCoupon
+	or.CouponId = r.Id
+	or.OrderNo = util.GetTradeNo(model.PCoupon, uid)
 	or.Price = int64(DefaultPrice)
 	or.OrderType = model.OrderTopup
 	if agent != nil {
@@ -90,8 +91,8 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	or := new(model.Order)
 	or.Status = int(model.YiUserOrder)
 	or.ProcessStatus = model.OrderWaitProcess
-	or.PaidType = model.PCoupon
-	or.Orderid = util.GetTradeNo(model.PCoupon, uid)
+	or.SubType = model.PCoupon
+	or.OrderNo = util.GetTradeNo(model.PCoupon, uid)
 	or.Price = int64(DefaultPrice)
 	or.OrderType = model.OrderTopup
 	if sharing {

@@ -5,7 +5,7 @@ import "github.com/astaxie/beego/orm"
 type Account struct {
 	Id        int    `orm:"pk;auto"`
 	AccountNo string `orm:"unique;size(64)" json:"-"` //
-	Userid    int    //个人和企业id
+	Userid    int    `orm:"unique"`                   //个人和企业id
 	UserType  int    //1 个人，2代理商，3企业
 	Banlance  int64  //账户余额
 	Topup     int64  //充值金额,消费者

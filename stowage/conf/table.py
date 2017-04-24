@@ -29,7 +29,7 @@ def alterTable():
                     alter column md5 drop default,
                     alter column uid drop default'''
     ordersql = '''alter table allsum_order
-                    alter column orderid drop default,
+                    alter column order_no drop default,
                     alter column uid drop default,
                     alter column create_time drop default,
                     alter column price drop default'''

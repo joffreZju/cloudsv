@@ -28,12 +28,12 @@ func (c *Controller) PayOnline() {
 		//微信下单接口
 		or := new(model.Order)
 		or.Status = model.YiUserOrder
-		or.PaidType = model.PwxPay
+		or.SubType = model.PwxPay
 		or.Price = money * 100
 		or.OrderType = model.OrderTopup
 		or.Uid = uid
-		or.Orderid = service.GetTradeNO(or.OrderType, or.Uid)
-		or.Desc = "AllSum服务预付费"
+		or.OrderNo = service.GetTradeNO(or.OrderType, or.Uid)
+		or.Desc = "AllSum账户充值"
 		or.User = user
 		or.Time = time.Now().Format(model.TimeFormat)
 		beego.Debug(or)
@@ -43,7 +43,7 @@ func (c *Controller) PayOnline() {
 			c.ReplyErr(err)
 			return
 		}
-		reply, err := wxisv.Pay.QrPay(or.Orderid, or.Desc, or.Price)
+		reply, err := wxisv.Pay.QrPay(or.OrderNo, or.Desc, or.Price)
 		if err != nil || len(reply.CodeUrl) == 0 {
 			beego.Error("weixin qrpay failed:", err)
 			c.ReplyErr(errcode.ErrWXPay)
