@@ -66,7 +66,7 @@ type Order struct {
 	Bill         *Bill   `orm:"reverse(one);column(bill_id)" json:",omitempty"`
 	Agent        *Agent  `orm:"rel(fk);null;column(agent_id)" json:",omitempty"`
 	CouponId     int     `orm:"null" json:",omitempty"`
-	Coupon       *Coupon `orm:"-"`
+	Coupon       *Coupon `orm:"-" json:",omitempty"`
 }
 
 func (u *Order) TableName() string {

@@ -88,6 +88,7 @@ func TransPayOnline(or *Order) (err error) {
 	b.Time = time.Now().Format(TimeFormat)
 	b.Order = or
 	b.Type = or.OrderType
+	b.SubType = or.SubType
 	b.UserId = or.Uid
 	b.AccountId = a.Id
 	_, err = o.Insert(b)
