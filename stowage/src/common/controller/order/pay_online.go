@@ -29,7 +29,7 @@ func (c *Controller) PayOnline() {
 		or := new(model.Order)
 		or.Status = model.YiUserOrder
 		or.SubType = model.PwxPay
-		or.Price = money * 100
+		or.Price = money * 10
 		or.OrderType = model.OrderTopup
 		or.Uid = uid
 		or.OrderNo = service.GetTradeNO(or.OrderType, or.Uid)

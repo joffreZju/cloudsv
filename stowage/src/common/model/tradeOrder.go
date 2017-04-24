@@ -151,7 +151,7 @@ func UpdateOrder(o *Order, fields ...string) (err error) {
 
 func GetOrderByOrderId(orderId string) (o *Order, err error) {
 	o = new(Order)
-	err = orm.NewOrm().QueryTable("allsum_order").Filter("OrderId", orderId).One(o)
+	err = orm.NewOrm().QueryTable("allsum_order").Filter("OrderNo", orderId).One(o)
 	if o != nil {
 		o.User = &User{Id: o.Uid}
 	}

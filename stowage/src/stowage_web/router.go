@@ -62,6 +62,7 @@ func LoadRouter() {
 
 	//账单
 	beego.Router(UserPrefix+"/bill/info", &bill.Controller{}, "Get:BillInfo")
+	beego.Router(UserPrefix+"/bill/list", &bill.Controller{}, "Get:GetBillsType")
 
 	//文档
 	beego.Router(ManagePrefix+"/doc/add", &doc.Controller{}, "POST:AddDocument")         //文档上传
