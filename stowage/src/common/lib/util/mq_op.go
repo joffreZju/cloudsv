@@ -1,6 +1,7 @@
 package util
 
 import (
+	cons "common/lib/constant"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
@@ -11,7 +12,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"web/cons"
 )
 
 //producer And consumer use MqSign

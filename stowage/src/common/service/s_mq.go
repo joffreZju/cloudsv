@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 )
 
-func SendCal(calType string, cars []*model.CarSummary, goods []*model.CalGoods, record *model.CalRecord) (err error) {
+func SendCalToMq(cars []*model.CarSummary, goods []*model.CalGoods, record *model.CalRecord) (err error) {
 	mqCars := make([]mqdto.MqCarInfo, len(cars))
 	mqGoods := make([]mqdto.MQWaybill, len(goods))
 	for _, v := range cars {
@@ -31,6 +31,7 @@ func SendCal(calType string, cars []*model.CarSummary, goods []*model.CalGoods, 
 		})
 	}
 	mqReq := mqdto.ReqMQDto{
+		//todo 回调地址和calType要修改
 		Callback:   "106.14.38.116:8090",
 		Cal_type:   record.CalType,
 		Using_id:   record.Id,
