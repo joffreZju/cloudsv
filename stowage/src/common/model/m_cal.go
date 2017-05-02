@@ -164,7 +164,3 @@ func InsertGoods(o orm.Ormer, gs []*CalGoods) (err error) {
 	}
 	return
 }
-
-func (t *CarSummary) TableName() string {
-	return "car_summary"
-}

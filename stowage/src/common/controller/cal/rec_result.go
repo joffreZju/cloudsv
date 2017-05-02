@@ -28,7 +28,7 @@ var success = MqResp{
 }
 
 func (c *RecController) HandleCalResult() {
-	// todo 这里修改的话计算引擎也要改，这里要不要签名
+	// todo wjf 这里修改的话计算引擎也要改，这里要不要签名,回调结果要不要签名等等。。
 	start := time.Now()
 	key := fmt.Sprintf("%x", sha256.Sum256([]byte("allsum_suanpeizai2.0")))
 	if key != c.Ctx.Request.Header.Get("key") {

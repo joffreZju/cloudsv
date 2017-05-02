@@ -79,7 +79,7 @@ func (c *Controller) Calculate() {
 		c.ReplyErr(e)
 	}
 	c.ReplySucc("sucess")
-	//todo 建立账单，收到计算结果之后扣费
+	//todo wjf 建立账单，收到计算结果之后扣费
 }
 
 func (c *Controller) GetCalResult() {

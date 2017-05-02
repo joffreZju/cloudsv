@@ -1,6 +1,7 @@
 package service
 
 import (
+	"common/lib/constant"
 	"common/lib/util"
 	"common/model"
 	"common/service/mqdto"
@@ -31,8 +32,7 @@ func SendCalToMq(cars []*model.CarSummary, goods []*model.CalGoods, record *mode
 		})
 	}
 	mqReq := mqdto.ReqMQDto{
-		//todo 回调地址和calType要修改
-		Callback:   "106.14.38.116:8090",
+		Callback:   constant.CAL_CALLBACK_URL,
 		Cal_type:   record.CalType,
 		Using_id:   record.Id,
 		Cal_times:  record.CalTimes,

@@ -71,6 +71,10 @@ func InitPgSQL(key string) (err error) {
 	orm.RegisterModel(new(Bill))
 	orm.RegisterModel(new(Order))
 	orm.RegisterModel(new(Coupon))
+	orm.RegisterModel(new(CalRecord))
+	orm.RegisterModel(new(CalGoods))
+	orm.RegisterModel(new(CalTemplate))
+	orm.RegisterModel(new(CarSummary))
 
 	err = orm.RunSyncdb("default", false, true)
 

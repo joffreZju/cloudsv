@@ -235,7 +235,7 @@ func GetCalHistory(uid, pageNumber, pageLimit int) (calRecords []*CalHistory, ma
 		order by ctt desc
 		limit ?
 		offset ?`
-	//定义临时结构体，不支持继承
+
 	calRecords = []*CalHistory{}
 	if _, err = o.Raw(sql, uid, pageLimit, pageLimit*(pageNumber-1)).
 		QueryRows(&calRecords); err != nil {

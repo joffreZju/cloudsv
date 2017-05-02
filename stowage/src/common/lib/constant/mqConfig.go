@@ -11,7 +11,7 @@ var MQ_TOPIC_PRODUCER string
 var MQ_TOPIC_CONSUMER string
 var MQ_PRODUCER_ID string
 var MQ_CONSUMER_ID string
-
+var CAL_CALLBACK_URL string //计算引擎回调地址
 func init() {
 	ALI_ACCESS_KEY_ID = beego.AppConfig.String("ALI_ACCESS_KEY_ID")
 	ALI_ACCESS_KEY_SECRET = beego.AppConfig.String("ALI_ACCESS_KEY_SECRET")
@@ -20,4 +20,5 @@ func init() {
 	MQ_TOPIC_CONSUMER = beego.AppConfig.String("MQ_TOPIC_CONSUMER")
 	MQ_PRODUCER_ID = beego.AppConfig.String("MQ_PRODUCER_ID")
 	MQ_CONSUMER_ID = beego.AppConfig.String("MQ_CONSUMER_ID")
+	CAL_CALLBACK_URL = beego.AppConfig.String("cal_callback")
 }
