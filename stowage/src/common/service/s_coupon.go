@@ -148,7 +148,7 @@ func AddCoupons(start, end int) (err error) {
 
 //aid == agent's userid
 func GrantAgent(start, end int, aid int) (err error) {
-	caps := end - start
+	caps := end - start + 1
 	if caps < 1 || start < LeastNumber {
 		beego.Error("coupon range wrong:%d:%d", start, end)
 		err = errcode.ErrParams

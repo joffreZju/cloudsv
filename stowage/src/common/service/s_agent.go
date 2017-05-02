@@ -32,8 +32,8 @@ func AgentClients(tel string) (users []*model.User, err error) {
 	return
 }
 
-func AgentGetList(page int) (total int, list []*model.Agent, err error) {
-	total, list, err = model.GetAgentList(page)
+func AgentGetList() (list []*model.Agent, err error) {
+	list, err = model.GetAgentList()
 	if err != nil {
 		beego.Error(err)
 		return

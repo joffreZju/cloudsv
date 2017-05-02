@@ -46,7 +46,7 @@ type OrderStatus struct {
 
 //用户平台内消费也存于此
 type Order struct {
-	Id         int    `orm:"auto;pk"`
+	Id         int    `orm:"auto;pk" json:"-"`
 	OrderNo    string `orm:"unique"`
 	PayOrderId string `orm:"null" json:,omitempty`
 	//CreateTime    time.Time `orm:"auto_now_add;type(dateime)"`
@@ -97,7 +97,7 @@ func GetPaidOrdersStp(page, limit, stp int) (ct int64, list []*Order, err error)
 			return
 		}
 	}
-	_, err = o.QueryTable("Bill").Filter("type", stp).Filter("Status", YiPaid).
+	_, err = o.QueryTable("allsum_order").Filter("SubType", stp).Filter("Status", YiPaid).
 		OrderBy("-Id").Limit(limit).Offset(page * limit).All(&list)
 	return
 }

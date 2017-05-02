@@ -89,6 +89,12 @@ func GetBillsByUser(id, page int) (list []*Bill, err error) {
 	return
 }
 
+func GetUserBillsByType(uid, tp int) (list []*Bill, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable("Bill").Filter("type", tp).Filter("UserId", uid).All(&list)
+	return
+}
+
 //根据账单类型获取列表，分页
 func GetBillsByType(page, offset, tp int) (cn int64, list []*Bill, err error) {
 	o := orm.NewOrm()

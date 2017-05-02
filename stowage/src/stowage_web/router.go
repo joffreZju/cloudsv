@@ -57,12 +57,14 @@ func LoadRouter() {
 
 	//订单交易
 	beego.Router(UserPrefix+"/order/pay", &order.Controller{}, "Post:PayOnline")
-	beego.Router(ManagePrefix+"/order/info", &order.Controller{}, "Get:OrderInfo")
+	beego.Router(UserPrefix+"/order/info", &order.Controller{}, "Get:OrderInfo")
 	beego.Router(ManagePrefix+"/order/list_day", &order.Controller{}, "Get:OrderDay")
+	beego.Router(ManagePrefix+"/order/coupon_list", &order.Controller{}, "Post:OrdersCoupon")
 
 	//账单
 	beego.Router(UserPrefix+"/bill/info", &bill.Controller{}, "Get:BillInfo")
 	beego.Router(ManagePrefix+"/bill/list", &bill.Controller{}, "Post:GetBillsType")
+	beego.Router(UserPrefix+"/bill/user_list", &bill.Controller{}, "Post:GetUserBillsType")
 
 	//文档
 	beego.Router(ManagePrefix+"/doc/add", &doc.Controller{}, "POST:AddDocument")         //文档上传
@@ -79,6 +81,7 @@ func LoadRouter() {
 		"/",
 		// user
 		ExemptPrefix + "/user/getcode", ExemptPrefix + "/user/register", ExemptPrefix + "/user/login",
+		UserPrefix + "/doc/file_down",
 	}
 
 	// add filter

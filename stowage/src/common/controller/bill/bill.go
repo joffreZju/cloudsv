@@ -23,6 +23,21 @@ func (c *Controller) BillInfo() {
 	c.ReplySucc(*b)
 }
 
+func (c *Controller) GetUserBillsType() {
+	tp, err := c.GetInt("tp")
+	if err != nil {
+		c.ReplyErr(errcode.ErrParams)
+		return
+	}
+	uid := int(c.UserID)
+	list, err := service.GetUserBillsByType(uid, tp)
+	if err != nil {
+		c.ReplyErr(errcode.ErrParams)
+		return
+	}
+	c.ReplySucc(list)
+}
+
 func (c *Controller) GetBillsType() {
 	tp, err := c.GetInt("tp")
 	if err != nil {
