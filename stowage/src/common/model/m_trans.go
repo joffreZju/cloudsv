@@ -7,6 +7,10 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+func getBillNo(no string) string {
+	return "9" + no
+}
+
 //使用数值加减函数
 func TransCouponUsing(or *Order, co *Coupon, ag *Agent) (err error) {
 	o := orm.NewOrm()
@@ -36,6 +40,7 @@ func TransCouponUsing(or *Order, co *Coupon, ag *Agent) (err error) {
 	b.Money = or.Price
 	b.Time = time.Now().Format(TimeFormat)
 	b.Order = or
+	b.BillNo = getBillNo(or.OrderNo)
 	b.Type = or.OrderType
 	b.UserId = or.Uid
 	b.AccountId = a.Id
@@ -87,6 +92,7 @@ func TransPayOnline(or *Order) (err error) {
 	b.Money = or.Price
 	b.Time = time.Now().Format(TimeFormat)
 	b.Order = or
+	b.BillNo = getBillNo(or.OrderNo)
 	b.Type = or.OrderType
 	b.SubType = or.SubType
 	b.UserId = or.Uid

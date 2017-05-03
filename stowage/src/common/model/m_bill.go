@@ -19,6 +19,7 @@ const (
 //用户在本平台服务消费记录也存此
 type Bill struct {
 	Id          int      `orm:"auto;pk"`
+	BillNo      string   `orm:"unique"`
 	User        *User    `orm:"-" json:",omitempty"`
 	UserId      int      `json:"-"`
 	AccountId   int      `jons:"-"`
