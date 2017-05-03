@@ -13,6 +13,7 @@ import (
 	//"common/lib/cache"
 	"time"
 
+	"common/lib/constant"
 	"github.com/astaxie/beego"
 	"github.com/ysqi/tokenauth2beego"
 )
@@ -46,6 +47,9 @@ func Init() (err error) {
 
 	// init push
 	err = push.Init()
+
+	// init config constant
+	_ = constant.Init()
 
 	// init pgsql
 	err = model.InitPgSQL(key)

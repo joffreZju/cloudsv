@@ -26,6 +26,8 @@ func LoadRouter() {
 	//beego.Router("/health", &maincontroller.Controller{}, "*:Check")
 	//wxpay callback
 	beego.Router("/notify/wxpay", &order.Controller{}, "Post:WxPayback")
+	//计算引擎回调
+	beego.Router("/notify/rec_result", &cal.RecController{}, "post:HandleCalResult")
 
 	// user 相关
 	beego.Router(ExemptPrefix+"/user/getcode", &user.Controller{}, "*:GetCode")
@@ -75,15 +77,13 @@ func LoadRouter() {
 	beego.Router(UserPrefix+"/doc/file_down", &doc.Controller{}, "GET:FileDownload") //文件下载
 
 	//配载计算模块
-	//beego.Router(UserPrefix+"/cal/get_tpl", &cal.Controller{}, "post:CheckAccountBalance") //todo wjf 计算检测账户余额
 	beego.Router(UserPrefix+"/cal/get_tpl", &cal.Controller{}, "post:GetTplAndFrequentCars")
 	beego.Router(UserPrefix+"/cal/store_tpl", &cal.Controller{}, "post:StoreTpl")
 	beego.Router(UserPrefix+"/cal/calculate", &cal.Controller{}, "post:Calculate")
 	beego.Router(UserPrefix+"/cal/get_cal_result", &cal.Controller{}, "post:GetCalResult")
 	beego.Router(UserPrefix+"/cal/get_edited_wbs", &cal.Controller{}, "post:GetEditedWbs")
 	beego.Router(UserPrefix+"/cal/get_cal_history", &cal.Controller{}, "post:GetCalHistory")
-	//接收计算结果
-	beego.Router(UserPrefix+"/cal/hanleresult", &cal.RecController{}, "post:HandleCalResult")
+
 	// 非登录态列表
 	notNeedAuthList := []string{
 		// aliyun check

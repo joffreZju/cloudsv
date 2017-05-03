@@ -23,6 +23,15 @@ const (
 	WAYBILL_SPLIT_V_div_W = 0.0045 // 立方米/kg
 )
 
+//define sms template code
+const (
+	SMS_CODE_EXPIRE_TIME    = time.Minute * 10
+	SMS_SIGN_NAME           = "壹算科技"
+	SMS_TEMPLATE_WEB        = "SMS_58265055"
+	SMS_TEMPLATE_TO_CRR     = "SMS_60060604"
+	SMS_TEMPLATE_WHEN_ERROR = "SMS_63875806"
+)
+
 //define user_role
 const (
 	USER_ROLE_NORMAL = 1
@@ -55,14 +64,6 @@ const (
 const (
 	SEND_SMS_CODE_EXISTED_MOBILE     = "existed_mobile"
 	SEND_SMS_CODE_NOT_EXISTED_MOBILE = "not_existed_mobile"
-)
-
-//define sms template code
-const (
-	SMS_CODE_EXPIRE_TIME = time.Minute * 10
-	SMS_SIGN_NAME        = "壹算科技"
-	SMS_TEMPLATE_WEBV2   = "SMS_58265055"
-	SMS_TEMPLATE_TO_CRR  = "SMS_60060604"
 )
 
 //define for token

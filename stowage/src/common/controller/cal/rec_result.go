@@ -1,6 +1,7 @@
 package cal
 
 import (
+	"common/lib/push"
 	"common/service"
 	"common/service/mqdto"
 	"crypto/sha256"
@@ -28,7 +29,6 @@ var success = MqResp{
 }
 
 func (c *RecController) HandleCalResult() {
-	// todo wjf 这里修改的话计算引擎也要改，这里要不要签名,回调结果要不要签名等等。。
 	start := time.Now()
 	key := fmt.Sprintf("%x", sha256.Sum256([]byte("allsum_suanpeizai2.0")))
 	if key != c.Ctx.Request.Header.Get("key") {
@@ -46,12 +46,13 @@ func (c *RecController) HandleCalResult() {
 	}
 	c.Data["json"] = success
 	c.ServeJSON()
-	//if calResult.Error_code != 0 {
-	//	notice := fmt.Sprintf("msgId：%s，usingId：%d，calTimes：%d，",
-	//		calResult.MqMsg_id, calResult.Using_id, calResult.Cal_times)
-	//	utils.SendSmsWhenError("13735544671", notice+time.Now().Format("2006-01-02 15:04:05"))
-	//	c.StopRun()
-	//}
+
+	if calResult.Error_code != 0 {
+		notice := fmt.Sprintf("msgId：%s，usingId：%d，calTimes：%d，",
+			calResult.MqMsg_id, calResult.Using_id, calResult.Cal_times)
+		push.SendErrorSms("13735544671", "计算引擎故障,"+notice+time.Now().Format("2006-01-02 15:04:05"))
+		c.StopRun()
+	}
 
 	var err error
 	for i := 0; i < 5; i++ {
