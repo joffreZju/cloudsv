@@ -1,12 +1,15 @@
 package service
 
 import (
-	"common/lib/constant"
 	"common/lib/util"
 	"common/model"
 	"common/service/mqdto"
 	"encoding/json"
+	"github.com/astaxie/beego"
 )
+
+//计算引擎回调地址
+var CAL_CALLBACK_URL = beego.AppConfig.String("cal_callback")
 
 func SendCalToMq(cars []*model.CarSummary, goods []*model.CalGoods, record *model.CalRecord) (err error) {
 	mqCars := make([]mqdto.MqCarInfo, len(cars))
@@ -32,7 +35,7 @@ func SendCalToMq(cars []*model.CarSummary, goods []*model.CalGoods, record *mode
 		})
 	}
 	mqReq := mqdto.ReqMQDto{
-		Callback:   constant.CAL_CALLBACK_URL,
+		Callback:   CAL_CALLBACK_URL,
 		Cal_type:   record.CalType,
 		Using_id:   record.Id,
 		Cal_times:  record.CalTimes,

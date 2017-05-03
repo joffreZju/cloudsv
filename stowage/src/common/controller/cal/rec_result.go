@@ -2,12 +2,14 @@ package cal
 
 import (
 	"common/lib/push"
+	"common/model"
 	"common/service"
 	"common/service/mqdto"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -34,15 +36,15 @@ func (c *RecController) HandleCalResult() {
 	if key != c.Ctx.Request.Header.Get("key") {
 		c.Data["json"] = fail
 		c.ServeJSON()
-		beego.Debug("invalid key")
-		c.StopRun()
+		beego.Error("invalid key")
+		return
 	}
 	calResult := mqdto.MQRespDto{}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &calResult); err != nil {
 		c.Data["json"] = fail
 		c.ServeJSON()
-		beego.Debug(err)
-		c.StopRun()
+		beego.Error(err)
+		return
 	}
 	c.Data["json"] = success
 	c.ServeJSON()
@@ -51,17 +53,36 @@ func (c *RecController) HandleCalResult() {
 		notice := fmt.Sprintf("msgId：%s，usingId：%d，calTimes：%d，",
 			calResult.MqMsg_id, calResult.Using_id, calResult.Cal_times)
 		push.SendErrorSms("13735544671", "计算引擎故障,"+notice+time.Now().Format("2006-01-02 15:04:05"))
-		c.StopRun()
+		return
 	}
 
 	var err error
 	for i := 0; i < 5; i++ {
 		if err = service.UpdateCalResult(&calResult); err == nil {
-			beego.Debug("计算结果写入成功,using_id:", calResult.Using_id, "耗时:", time.Now().Sub(start))
+			beego.Error("计算结果写入成功,using_id:", calResult.Using_id, "耗时:", time.Now().Sub(start))
 			break
 		}
 	}
 	if err != nil {
-		beego.Debug("计算结果写入失败,using_id:", calResult.Using_id, err)
+		beego.Error("计算结果写入失败,using_id:", calResult.Using_id, err)
+		return
+	}
+	// 写入结果成功，进行扣费，并更新record status
+	cr, err := model.GetCalRecordById(calResult.Using_id)
+	if err != nil {
+		beego.Error(err)
+		return
+	}
+	//扣费
+	err = model.TransFinance(cr.OrderId)
+	if err != nil {
+		beego.Error(err)
+		cr.PayStatus = model.YiFailed
+	} else {
+		cr.PayStatus = model.YiPaid
+	}
+	if e := model.UpdateCalRecord(orm.NewOrm(), cr); e != nil {
+		beego.Error(e)
+		return
 	}
 }

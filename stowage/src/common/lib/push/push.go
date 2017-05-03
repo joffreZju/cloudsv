@@ -1,7 +1,6 @@
 package push
 
 import (
-	"common/lib/constant"
 	"encoding/json"
 	"fmt"
 	"github.com/GiterLab/aliyun-sms-go-sdk/sms"
@@ -31,15 +30,24 @@ func Init() (err error) {
 //	return sucess
 //}
 
+//define sms template code
+const (
+	ALI_ACCESS_KEY_ID       string = "LTAIwxFn7egYfvra"
+	ALI_ACCESS_KEY_SECRET   string = "nBfpqo4StRZv9JreRsLQpFaZKKUT1h"
+	SMS_SIGN_NAME                  = "壹算科技"
+	SMS_TEMPLATE_WEB               = "SMS_58265055"
+	SMS_TEMPLATE_WHEN_ERROR        = "SMS_63875806"
+)
+
 func SendSmsCodeToMobile(mobile, code string) error {
 	param := make(map[string]string)
 	param["smscode"] = code
-	c := sms.New(constant.ALI_ACCESS_KEY_ID, constant.ALI_ACCESS_KEY_SECRET)
+	c := sms.New(ALI_ACCESS_KEY_ID, ALI_ACCESS_KEY_SECRET)
 	str, err := json.Marshal(param)
 	if err != nil {
 		return fmt.Errorf("send smscode failed,%v", err)
 	}
-	e, err := c.SendOne(mobile, constant.SMS_SIGN_NAME, constant.SMS_TEMPLATE_WEB, string(str))
+	e, err := c.SendOne(mobile, SMS_SIGN_NAME, SMS_TEMPLATE_WEB, string(str))
 	if err != nil {
 		return fmt.Errorf("send sms failed,%v,%v", err, e.Error())
 	}
@@ -49,12 +57,12 @@ func SendSmsCodeToMobile(mobile, code string) error {
 func SendErrorSms(mobile, content string) error {
 	param := make(map[string]string)
 	param["content"] = content
-	c := sms.New(constant.ALI_ACCESS_KEY_ID, constant.ALI_ACCESS_KEY_SECRET)
+	c := sms.New(ALI_ACCESS_KEY_ID, ALI_ACCESS_KEY_SECRET)
 	str, err := json.Marshal(param)
 	if err != nil {
 		return fmt.Errorf("send sms failed,%v", err)
 	}
-	e, err := c.SendOne(mobile, constant.SMS_SIGN_NAME, constant.SMS_TEMPLATE_WHEN_ERROR, string(str))
+	e, err := c.SendOne(mobile, SMS_SIGN_NAME, SMS_TEMPLATE_WHEN_ERROR, string(str))
 	if err != nil {
 		return fmt.Errorf("send sms failed,%v,%v", err, e.Error())
 	}

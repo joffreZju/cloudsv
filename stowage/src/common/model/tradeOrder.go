@@ -8,14 +8,14 @@ import (
 
 const (
 	//order status
-	YiUserOrder        = iota // 0 创建订单
+	YiOrderCreate      = iota // 0 创建订单
 	YiCancel                  //取消
 	YiWaitPay                 //等待支付完成
 	YiWaitPayCanCancel        //等待支付，可被取消
 	YiPaid                    //支付完成
 	YiPayBack                 //退款
 	YiPayBackFinish           //推款成功
-
+	YiFailed                  //支付完成
 )
 
 const (
@@ -77,7 +77,7 @@ func (o *Order) UpdateProcessStatus() {
 	if o == nil {
 		return
 	}
-	if o.Status == YiUserOrder {
+	if o.Status == YiOrderCreate {
 		o.ProcessStatus = OrderWaitProcess
 	} else if o.Status == YiPaid {
 		o.ProcessStatus = OrderFinished

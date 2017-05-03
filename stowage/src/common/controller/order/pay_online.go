@@ -27,7 +27,7 @@ func (c *Controller) PayOnline() {
 	if pro == "wx" {
 		//微信下单接口
 		or := new(model.Order)
-		or.Status = model.YiUserOrder
+		or.Status = model.YiOrderCreate
 		or.SubType = model.PwxPay
 		or.Price = money * 10
 		or.OrderType = model.OrderTopup

@@ -1,10 +1,8 @@
 package service
 
 import (
-	"common/model"
-
-	cons "common/lib/constant"
 	"common/lib/errcode"
+	"common/model"
 	"common/service/mqdto"
 	"errors"
 	"fmt"
@@ -33,12 +31,12 @@ func GetTpl(uid int) (t *model.CalTemplate, err error) {
 func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.CalGoods, record *model.CalRecord) (err error) {
 	o := orm.NewOrm()
 	o.Begin()
-	//var err error
-	if len(record.CalNo) != 0 {
-		record, err = model.GetCalRecord(record.CalNo)
+	calType := record.CalType
+	if record, err = model.GetCalRecord(record.CalNo); err == nil {
 		if time.Now().Sub(record.Ctt).Hours() >= 48 {
 			return errors.New("重复计算时间已超过48小时")
 		}
+		record.CalType = calType
 		record.CalTimes += 1
 		record.Ltt = time.Now()
 		err = model.UpdateCalRecord(o, record)
@@ -48,6 +46,23 @@ func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.
 			return
 		}
 	} else {
+		// 新的一次计算需要建立新账单，如果重复计算那么不需要创建账单
+		or := &model.Order{
+			Status:    model.YiOrderCreate,
+			SubType:   model.CStowage,
+			Price:     10,
+			OrderType: model.OrderConsume,
+			Uid:       uid,
+			OrderNo:   GetTradeNO(model.OrderConsume, uid),
+			Desc:      "算配载计算费用",
+			Time:      time.Now().Format(model.TimeFormat),
+		}
+		err = CreateOrder(or)
+		if err != nil {
+			return
+		}
+		record.OrderId = or.Id
+		record.PayStatus = model.YiOrderCreate
 		record.CalTimes = 1
 		record.CalNo = fmt.Sprintf("%d%d", uid, time.Now().UnixNano())
 		record.UserId = uid
@@ -145,9 +160,9 @@ func GetCarsResult(calNo string) (cs []*model.CarSummary, err error) {
 	sql := `select cs.* from car_summary as cs
 			inner join cal_record as cr
 			on cs.cal_record_id = cr.id and cs.cal_times=cr.cal_times
-		where cr.cal_no=? and cr.cal_times = cr.last_result`
+		where cr.cal_no=? and cr.pay_status = ? and cr.cal_times = cr.last_result`
 	o := orm.NewOrm()
-	if _, err = o.Raw(sql, calNo).QueryRows(&cs); err != nil {
+	if _, err = o.Raw(sql, calNo, model.YiPaid).QueryRows(&cs); err != nil {
 		return nil, err
 	}
 	return cs, nil
@@ -169,10 +184,10 @@ func GetGoodsResult(calNo string) (wbs []*model.CalGoods, err error) {
 		from cal_goods as cg
 		inner join spz_cal_record as cr
 		on cg.cal_record_id = cr.id and cg.cal_times=cr.cal_times
-		where cr.cal_no=? and cg.split_info != ? and cr.cal_times = cr.last_result
+		where cr.cal_no=? and cg.split_info != ? and cr.pay_status = ? and cr.cal_times = cr.last_result
 		group by cg.waybill_number,cg.cal_result`
 	o := orm.NewOrm()
-	if _, err = o.Raw(sql, calNo, cons.WAYBILL_SPLIT_FROM).QueryRows(&wbs); err != nil {
+	if _, err = o.Raw(sql, calNo, model.WAYBILL_SPLIT_FROM, model.YiPaid).QueryRows(&wbs); err != nil {
 		return nil, err
 	}
 	return wbs, nil
@@ -200,7 +215,7 @@ func GetEditedWaybills(calNo string) (goods []*model.CalGoods, err error) {
 			on cg.cal_record_id = cr.id and cg.cal_times=cr.cal_times
 		where cr.order_no=? and cg.split_info != ?`
 	o := orm.NewOrm()
-	if _, err = o.Raw(sql, calNo, cons.WAYBILL_SPLIT_TO).QueryRows(&goods); err != nil {
+	if _, err = o.Raw(sql, calNo, model.WAYBILL_SPLIT_TO).QueryRows(&goods); err != nil {
 		return nil, err
 	}
 	return goods, nil

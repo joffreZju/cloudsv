@@ -6,6 +6,19 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+//define waybills 打底，必装(true,false)
+const (
+	STRING_TRUE           = "true"
+	STRING_FALSE          = "" //false
+	WAYBILL_SPLIT_FROM    = "split_from"
+	WAYBILL_SPLIT_TO      = "split_to"
+	ORDER_CAL_TYPE_MONEY  = "moneyOpt"
+	ORDER_CAL_TYPE_LOAD   = "fullLoad"
+	WAYBILL_SPLIT_Vmax    = 0.5    // 立方米
+	WAYBILL_SPLIT_Wmax    = 100.0  // kg
+	WAYBILL_SPLIT_V_div_W = 0.0045 // 立方米/kg
+)
+
 type CalTemplate struct {
 	Id             int       `orm:"column(id);auto;pk" json:"-"`
 	UserId         int       `orm:"column(user_id);" json:"-"`
@@ -35,7 +48,9 @@ func GetTemplate(uid int) (t *CalTemplate, err error) {
 type CalRecord struct {
 	Id        int    `orm:"column(id);auto;pk"`
 	UserId    int    `orm:"column(user_id);"`
-	AccountId int64  `orm:"column(account_id);null"`
+	OrderId   int    `orm:"column(order_id);"`
+	AccountId int    `orm:"column(account_id);null"`
+	PayStatus int    `orm:"column(pay_status);null"`
 	CalNo     string `orm:"column(cal_no);unique"`
 	//UsingCost  float64   `orm:"column(using_cost);null"`
 	CalTimes   int `orm:"column(cal_times);"`
@@ -82,9 +97,20 @@ type CalGoods struct {
 	Utt            time.Time `orm:"column(utt);type(timestamp with time zone);null" json:"-"`
 }
 
+func GetCalRecordById(id int) (cr *CalRecord, err error) {
+	cr = new(CalRecord)
+	err = orm.NewOrm().QueryTable("CalTRecord").Filter("Id", id).One(cr)
+	return
+}
+
 func GetCalRecord(calNo string) (cr *CalRecord, err error) {
 	cr = new(CalRecord)
 	err = orm.NewOrm().QueryTable("CalTRecord").Filter("CalNo", calNo).One(cr)
+	return
+}
+
+func UpdateCalRecordPayStatus(cr *CalRecord) (err error) {
+	_, err = orm.NewOrm().Update(cr)
 	return
 }
 

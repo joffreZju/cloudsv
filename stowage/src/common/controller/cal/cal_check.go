@@ -1,7 +1,6 @@
 package cal
 
 import (
-	cons "common/lib/constant"
 	"common/model"
 	"errors"
 	mapset "github.com/deckarep/golang-set"
@@ -9,7 +8,7 @@ import (
 
 //检测车辆信息和运单信息是否正确，检测打底车辆是否存在
 func (c *Controller) checkCarsAndGoods(cars []*model.CarSummary, goods []*model.CalGoods) (string, error) {
-	calType := cons.ORDER_CAL_TYPE_LOAD
+	calType := model.ORDER_CAL_TYPE_LOAD
 	if len(cars) == 0 || len(goods) == 0 {
 		return calType, errors.New("车辆、货物字段不能为空")
 	}
@@ -28,7 +27,7 @@ func (c *Controller) checkCarsAndGoods(cars []*model.CarSummary, goods []*model.
 	waybillSet := mapset.NewSet()
 	for _, v := range goods {
 		if v.FreightCharges > 0 {
-			calType = cons.ORDER_CAL_TYPE_MONEY
+			calType = model.ORDER_CAL_TYPE_MONEY
 		}
 		if v.ActualVolume < 0 || v.ActualWeight < 0 || v.FreightCharges < 0 {
 			return calType, errors.New("运单重量体积金额不能小于0")
@@ -49,14 +48,14 @@ func (c *Controller) splitWaybill(goods []*model.CalGoods) (wbs []*model.CalGood
 	primes := []float64{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
 		43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127,
 		131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199}
-	Vmax := cons.WAYBILL_SPLIT_Vmax
-	Wmax := cons.WAYBILL_SPLIT_Wmax
-	V_div_W := cons.WAYBILL_SPLIT_V_div_W
-	split_from := cons.WAYBILL_SPLIT_FROM
-	split_to := cons.WAYBILL_SPLIT_TO
+	Vmax := model.WAYBILL_SPLIT_Vmax
+	Wmax := model.WAYBILL_SPLIT_Wmax
+	V_div_W := model.WAYBILL_SPLIT_V_div_W
+	split_from := model.WAYBILL_SPLIT_FROM
+	split_to := model.WAYBILL_SPLIT_TO
 	for _, v := range goods {
 		//不需要拆单
-		if v.Split != cons.STRING_TRUE || v.PackageNumber <= 1 ||
+		if v.Split != model.STRING_TRUE || v.PackageNumber <= 1 ||
 			(v.ActualVolume <= Vmax && v.ActualWeight <= Wmax) {
 			wbs = append(wbs, v)
 			continue

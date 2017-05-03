@@ -41,7 +41,7 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 		agent = nil
 	}
 	or := new(model.Order)
-	or.Status = int(model.YiUserOrder)
+	or.Status = int(model.YiOrderCreate)
 	or.ProcessStatus = model.OrderWaitProcess
 	or.SubType = model.PCoupon
 	or.CouponId = r.Id

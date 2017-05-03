@@ -1,9 +1,9 @@
 package model
 
 import (
-	"errors"
 	"time"
 
+	"common/lib/errcode"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -139,7 +139,13 @@ func TransFinance(orderId int) (err error) {
 		o.Rollback()
 		return
 	}
-
+	//更新订单
+	or.Status = YiPaid
+	_, err = o.Update(or, "Status")
+	if err != nil {
+		o.Rollback()
+		return
+	}
 	_, err = o.QueryTable("Order").Filter("Id", orderId).Update(orm.Params{"Status": YiPaid})
 	if err != nil {
 		o.Rollback()
@@ -152,7 +158,7 @@ func TransFinance(orderId int) (err error) {
 	} else {
 		if a.Banlance < b.Money {
 			o.Rollback()
-			return errors.New("账户余额不足")
+			return errcode.ErrAccountFundLow
 		}
 		a.Spend = a.Spend + b.Money
 		a.Banlance = a.Banlance - b.Money

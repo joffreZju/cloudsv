@@ -19,10 +19,12 @@ func (c *Controller) GetTplAndFrequentCars() {
 	t, e := model.GetTemplate(uid)
 	if e != nil {
 		c.ReplyErr(e)
+		return
 	}
 	cars, e := model.GetFrequentCars(uid)
 	if e != nil {
 		c.ReplyErr(e)
+		return
 	}
 	c.ReplySucc(map[string]interface{}{
 		"Cars": cars,
@@ -37,12 +39,14 @@ func (c *Controller) StoreTpl() {
 	e := json.Unmarshal([]byte(s), tpls)
 	if len(tpls) <= 0 || e != nil {
 		c.ReplyErr(errcode.ErrTplIsNull)
+		return
 	}
 	tpls[0].UserId = uid
 	tpls[0].Ctt = time.Now()
 	e = model.InsertTemplate(tpls[0])
 	if e != nil {
 		c.ReplyErr(e)
+		return
 	}
 	c.ReplySucc("success")
 }
@@ -61,25 +65,29 @@ func (c *Controller) Calculate() {
 	if e != nil {
 		beego.Error(e)
 		c.ReplyErr(e)
+		return
 	}
 	e = json.Unmarshal([]byte(goodsString), goods)
 	if e != nil {
 		beego.Error(e)
 		c.ReplyErr(e)
+		return
 	}
 	cr.CalType, e = c.checkCarsAndGoods(cars, goods)
 	if e != nil {
 		beego.Error(e)
 		c.ReplyErr(e)
+		return
 	}
 	splitGoods := c.splitWaybill(goods)
+	//插入计算数据并发起计算请求，建立账单
 	e = service.InsertCalToDbAndSendToMq(uid, cars, splitGoods, cr)
 	if e != nil {
 		beego.Error(e)
 		c.ReplyErr(e)
+		return
 	}
 	c.ReplySucc("sucess")
-	//todo wjf 建立账单，收到计算结果之后扣费
 }
 
 func (c *Controller) GetCalResult() {
@@ -87,15 +95,16 @@ func (c *Controller) GetCalResult() {
 	cars, e := service.GetCarsResult(calNo)
 	if e != nil {
 		c.ReplyErr(errcode.ErrCalResultIsNull)
+		return
 	}
 	goods, e := service.GetGoodsResult(calNo)
 	if e != nil {
 		c.ReplyErr(errcode.ErrCalResultIsNull)
+		return
 	}
 	c.ReplySucc(map[string]interface{}{
 		"CarsResult":  cars,
 		"GoodsResult": goods,
-		//"CalNo": calNo,
 	})
 }
 
@@ -104,15 +113,16 @@ func (c *Controller) GetEditedWbs() {
 	cars, e := service.GetEditedCars(calNo)
 	if e != nil {
 		c.ReplyErr(e)
+		return
 	}
 	goods, e := service.GetEditedWaybills(calNo)
 	if e != nil {
 		c.ReplyErr(e)
+		return
 	}
 	c.ReplySucc(map[string]interface{}{
 		"Cars":      cars,
 		"GoodsList": goods,
-		//"CalNo": calNo,
 	})
 }
 
@@ -123,6 +133,7 @@ func (c *Controller) GetCalHistory() {
 	calRecords, maxCount, e := service.GetCalHistory(uid, pageNumber, pageLimit)
 	if e != nil {
 		c.ReplyErr(e)
+		return
 	}
 	c.ReplySucc(map[string]interface{}{
 		"MaxCount": maxCount,

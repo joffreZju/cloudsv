@@ -50,6 +50,7 @@ var (
 	ErrALIPay                  = &CodeError{20134, "支付宝支付暂不可用"}
 	ErrGetBillFailed           = &CodeError{20140, "获取账单失败"}
 	ErrCreateBillFailed        = &CodeError{20141, "创建账单失败"}
+	ErrAccountFundLow          = &CodeError{20142, "账户余额不足"}
 
 	ErrUploadFileFailed = &CodeError{20150, "文件上传失败"}
 	ErrFileNotExist     = &CodeError{20151, "文件不存在"}
