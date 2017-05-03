@@ -8,12 +8,11 @@ import (
 	"github.com/astaxie/beego"
 )
 
-//计算引擎回调地址
-var CAL_CALLBACK_URL = beego.AppConfig.String("cal_callback")
-
 func SendCalToMq(cars []*model.CarSummary, goods []*model.CalGoods, record *model.CalRecord) (err error) {
-	mqCars := make([]mqdto.MqCarInfo, len(cars))
-	mqGoods := make([]mqdto.MQWaybill, len(goods))
+	//计算引擎回调地址
+	CAL_CALLBACK_URL := beego.AppConfig.String("cal_callback")
+	mqCars := []mqdto.MqCarInfo{}
+	mqGoods := []mqdto.MQWaybill{}
 	for _, v := range cars {
 		mqCars = append(mqCars, mqdto.MqCarInfo{
 			Car_no: v.CarNo,
@@ -34,7 +33,7 @@ func SendCalToMq(cars []*model.CarSummary, goods []*model.CalGoods, record *mode
 			Uns: v.Understowed,
 		})
 	}
-	mqReq := mqdto.ReqMQDto{
+	mqData := mqdto.ReqMQDto{
 		Callback:   CAL_CALLBACK_URL,
 		Cal_type:   record.CalType,
 		Using_id:   record.Id,
@@ -43,7 +42,7 @@ func SendCalToMq(cars []*model.CarSummary, goods []*model.CalGoods, record *mode
 		Goods_list: mqGoods,
 	}
 	var b []byte
-	b, err = json.Marshal(mqReq)
+	b, err = json.Marshal(mqData)
 	if err != nil {
 		return
 	}

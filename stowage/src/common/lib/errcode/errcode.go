@@ -65,7 +65,7 @@ var (
 
 	ErrNoTpl           = &CodeError{20170, "模板不存在"}
 	ErrTplIsNull       = &CodeError{20171, "模板字段为空或有误"}
-	ErrCalResultIsNull = &CodeError{20172, "计算还未完成"}
+	ErrCalResultIsNull = &CodeError{20172, "计算结果还未返回"}
 )
 
 func ParseError(err error) (code int, msg string) {

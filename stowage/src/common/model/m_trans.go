@@ -141,16 +141,17 @@ func TransFinance(orderId int) (err error) {
 	}
 	//更新订单
 	or.Status = YiPaid
-	_, err = o.Update(or, "Status")
+	_, err = o.Update(&or, "Status")
 	if err != nil {
 		o.Rollback()
 		return
 	}
-	_, err = o.QueryTable("Order").Filter("Id", orderId).Update(orm.Params{"Status": YiPaid})
-	if err != nil {
-		o.Rollback()
-		return
-	}
+	//和上面代码重复，表名写错
+	//_, err = o.QueryTable("Order").Filter("Id", orderId).Update(orm.Params{"Status": YiPaid})
+	//if err != nil {
+	//	o.Rollback()
+	//	return
+	//}
 
 	if or.OrderType == OrderTopup {
 		a.Banlance = a.Banlance + b.Money

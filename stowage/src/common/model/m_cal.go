@@ -99,13 +99,13 @@ type CalGoods struct {
 
 func GetCalRecordById(id int) (cr *CalRecord, err error) {
 	cr = new(CalRecord)
-	err = orm.NewOrm().QueryTable("CalTRecord").Filter("Id", id).One(cr)
+	err = orm.NewOrm().QueryTable("CalRecord").Filter("Id", id).One(cr)
 	return
 }
 
 func GetCalRecord(calNo string) (cr *CalRecord, err error) {
 	cr = new(CalRecord)
-	err = orm.NewOrm().QueryTable("CalTRecord").Filter("CalNo", calNo).One(cr)
+	err = orm.NewOrm().QueryTable("CalRecord").Filter("CalNo", calNo).One(cr)
 	return
 }
 

@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	MQ_URL                       = beego.AppConfig.String("MQ_URL")
-	MQ_TOPIC_PRODUCER            = beego.AppConfig.String("MQ_TOPIC_PRODUCER")
-	MQ_TOPIC_CONSUMER            = beego.AppConfig.String("MQ_TOPIC_CONSUMER")
-	MQ_PRODUCER_ID               = beego.AppConfig.String("MQ_PRODUCER_ID")
-	MQ_CONSUMER_ID               = beego.AppConfig.String("MQ_CONSUMER_ID")
+	//MQ_URL                       = beego.AppConfig.String("MQ_URL")
+	//MQ_TOPIC_PRODUCER            = beego.AppConfig.String("MQ_TOPIC_PRODUCER")
+	//MQ_TOPIC_CONSUMER            = beego.AppConfig.String("MQ_TOPIC_CONSUMER")
+	//MQ_PRODUCER_ID               = beego.AppConfig.String("MQ_PRODUCER_ID")
+	//MQ_CONSUMER_ID               = beego.AppConfig.String("MQ_CONSUMER_ID")
 	ALI_ACCESS_KEY_ID     string = "LTAIwxFn7egYfvra"
 	ALI_ACCESS_KEY_SECRET string = "nBfpqo4StRZv9JreRsLQpFaZKKUT1h"
 )
@@ -40,34 +40,35 @@ type MqMsg struct {
 }
 
 func Producer(bodyStr string) error {
-	Topic := MQ_TOPIC_PRODUCER
-	URL := MQ_URL
-	AccessID := ALI_ACCESS_KEY_ID
-	AccessKEY := ALI_ACCESS_KEY_SECRET
-	ProducerID := MQ_PRODUCER_ID
+	Topic := beego.AppConfig.String("MQ_TOPIC_PRODUCER")
+	URL := beego.AppConfig.String("MQ_URL")
+	ProducerID := beego.AppConfig.String("MQ_PRODUCER_ID")
 	newline := "\n"
 	content := Md5Cal2String([]byte(bodyStr))
 	date := fmt.Sprintf("%d", time.Now().UnixNano())[0:13]
 	signStr := Topic + newline + ProducerID + newline + content + newline + date
-	sign := MqSigh(signStr, AccessKEY)
+	sign := MqSigh(signStr, ALI_ACCESS_KEY_SECRET)
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", URL+"/message/?topic="+Topic+"&time="+date+"&tag=http"+"&key=http", strings.NewReader(bodyStr))
 	if err != nil {
+		beego.Error(err)
 		return fmt.Errorf("MQ Producer error: %v", err)
 	}
 
 	req.Header.Set("Signature", sign)
-	req.Header.Set("AccessKey", AccessID)
+	req.Header.Set("AccessKey", ALI_ACCESS_KEY_ID)
 	req.Header.Set("ProducerID", ProducerID)
 	req.Header.Set("Content-Type", "text/html;charset=UTF-8")
 
 	resp, err := client.Do(req)
 	if err != nil {
+		beego.Error(err)
 		return fmt.Errorf("MQ Producer error: %v", err)
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		beego.Debug("read MQ response body error: ", err)
+		beego.Error("read MQ response body error: ", err)
+		return err
 	}
 	var respMsg MqMsg
 	json.Unmarshal(body, &respMsg)
@@ -76,6 +77,7 @@ func Producer(bodyStr string) error {
 	if resp.StatusCode == 201 {
 		return nil
 	} else {
+		beego.Error(err)
 		return fmt.Errorf("MQ Producer error: %v", resp.Status)
 	}
 }

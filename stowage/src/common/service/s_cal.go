@@ -32,10 +32,11 @@ func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.
 	o := orm.NewOrm()
 	o.Begin()
 	calType := record.CalType
-	if record, err = model.GetCalRecord(record.CalNo); err == nil {
+	if recordInDb, e := model.GetCalRecord(record.CalNo); e == nil {
 		if time.Now().Sub(record.Ctt).Hours() >= 48 {
 			return errors.New("重复计算时间已超过48小时")
 		}
+		record = recordInDb
 		record.CalType = calType
 		record.CalTimes += 1
 		record.Ltt = time.Now()
@@ -65,6 +66,7 @@ func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.
 		record.PayStatus = model.YiOrderCreate
 		record.CalTimes = 1
 		record.CalNo = fmt.Sprintf("%d%d", uid, time.Now().UnixNano())
+		record.CalType = calType
 		record.UserId = uid
 		record.Ctt = time.Now()
 		record.Ltt = time.Now()
@@ -78,10 +80,13 @@ func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.
 	for _, v := range cars {
 		v.CalRecordId = record.Id
 		v.CalTimes = record.CalTimes
+		v.UserId = uid
+		v.Ctt = time.Now()
 	}
 	for _, v := range goods {
 		v.CalRecordId = record.Id
 		v.CalTimes = record.CalTimes
+		v.Ctt = time.Now()
 	}
 	err = model.InsertCars(o, cars)
 	if err != nil {
@@ -94,8 +99,14 @@ func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.
 		o.Rollback()
 		beego.Error(err)
 		return
+	} else if e := o.Commit(); e != nil {
+		beego.Error(e)
 	}
 	err = SendCalToMq(cars, goods, record)
+	if err != nil {
+		beego.Error(err)
+		return
+	}
 	beego.Info("发送MQ消息成功:", record.CalNo, record.Id)
 	return
 }
@@ -123,7 +134,7 @@ func UpdateCalResult(result *mqdto.MQRespDto) (err error) {
 			total_volume= ?,
 			utt = ?,
 			stowage_ratio = (?/max_weight + ?/max_volume)/2
-		where using_id = ? and cal_times = ? and car_no = ?`
+		where cal_record_id = ? and cal_times = ? and car_no = ?`
 	for _, v := range result.Car_summary {
 		_, err = o.Raw(sql, v.Total_money, v.Total_weight, v.Total_volume, time.Now(),
 			v.Total_weight, v.Total_volume,
@@ -157,9 +168,9 @@ func UpdateCalResult(result *mqdto.MQRespDto) (err error) {
 //获取计算结果的carSummary
 func GetCarsResult(calNo string) (cs []*model.CarSummary, err error) {
 	cs = []*model.CarSummary{}
-	sql := `select cs.* from car_summary as cs
+	sql := `select car.* from car_summary as car
 			inner join cal_record as cr
-			on cs.cal_record_id = cr.id and cs.cal_times=cr.cal_times
+			on car.cal_record_id = cr.id and car.cal_times=cr.cal_times
 		where cr.cal_no=? and cr.pay_status = ? and cr.cal_times = cr.last_result`
 	o := orm.NewOrm()
 	if _, err = o.Raw(sql, calNo, model.YiPaid).QueryRows(&cs); err != nil {
@@ -182,7 +193,7 @@ func GetGoodsResult(calNo string) (wbs []*model.CalGoods, err error) {
 			max(cg.other_info) as other_info,
 			cg.cal_result
 		from cal_goods as cg
-		inner join spz_cal_record as cr
+		inner join cal_record as cr
 		on cg.cal_record_id = cr.id and cg.cal_times=cr.cal_times
 		where cr.cal_no=? and cg.split_info != ? and cr.pay_status = ? and cr.cal_times = cr.last_result
 		group by cg.waybill_number,cg.cal_result`
@@ -213,7 +224,7 @@ func GetEditedWaybills(calNo string) (goods []*model.CalGoods, err error) {
 	sql := `select cg.* from cal_goods as cg
 			inner join cal_record as cr
 			on cg.cal_record_id = cr.id and cg.cal_times=cr.cal_times
-		where cr.order_no=? and cg.split_info != ?`
+		where cr.cal_no=? and cg.split_info != ?`
 	o := orm.NewOrm()
 	if _, err = o.Raw(sql, calNo, model.WAYBILL_SPLIT_TO).QueryRows(&goods); err != nil {
 		return nil, err
@@ -241,7 +252,7 @@ func GetCalHistory(uid, pageNumber, pageLimit int) (calRecords []*CalHistory, ma
 	sql = `select cr.cal_no,
 			max(cr.ctt) as ctt,
 			max(cr.cal_times) as cal_times,
-			avg(cc.stowage_ratio) as stowage_ratio
+			avg(car.stowage_ratio) as stowage_ratio
 		from cal_record as cr
 			inner join car_summary as car
 			on car.cal_record_id = cr.id and car.cal_times = cr.cal_times

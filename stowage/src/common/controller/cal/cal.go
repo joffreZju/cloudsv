@@ -16,7 +16,7 @@ type Controller struct {
 
 func (c *Controller) GetTplAndFrequentCars() {
 	uid := int(c.UserID)
-	t, e := model.GetTemplate(uid)
+	oneTpl, e := model.GetTemplate(uid)
 	if e != nil {
 		c.ReplyErr(e)
 		return
@@ -28,22 +28,22 @@ func (c *Controller) GetTplAndFrequentCars() {
 	}
 	c.ReplySucc(map[string]interface{}{
 		"Cars": cars,
-		"Tpl":  t,
+		"Tpl":  oneTpl,
 	})
 }
 
 func (c *Controller) StoreTpl() {
 	uid := int(c.UserID)
 	s := c.GetString("Tpl")
-	tpls := []*model.CalTemplate{}
-	e := json.Unmarshal([]byte(s), tpls)
-	if len(tpls) <= 0 || e != nil {
+	tpl := &model.CalTemplate{}
+	e := json.Unmarshal([]byte(s), tpl)
+	if e != nil || len(tpl.WaybillNumber) == 0 {
 		c.ReplyErr(errcode.ErrTplIsNull)
 		return
 	}
-	tpls[0].UserId = uid
-	tpls[0].Ctt = time.Now()
-	e = model.InsertTemplate(tpls[0])
+	tpl.UserId = uid
+	tpl.Ctt = time.Now()
+	e = model.InsertTemplate(tpl)
 	if e != nil {
 		c.ReplyErr(e)
 		return
@@ -61,13 +61,13 @@ func (c *Controller) Calculate() {
 	cr := &model.CalRecord{
 		CalNo: calNo,
 	}
-	e := json.Unmarshal([]byte(carString), cars)
+	e := json.Unmarshal([]byte(carString), &cars)
 	if e != nil {
 		beego.Error(e)
 		c.ReplyErr(e)
 		return
 	}
-	e = json.Unmarshal([]byte(goodsString), goods)
+	e = json.Unmarshal([]byte(goodsString), &goods)
 	if e != nil {
 		beego.Error(e)
 		c.ReplyErr(e)
@@ -87,18 +87,20 @@ func (c *Controller) Calculate() {
 		c.ReplyErr(e)
 		return
 	}
-	c.ReplySucc("sucess")
+	c.ReplySucc(map[string]interface{}{
+		"CalNo": cr.CalNo,
+	})
 }
 
 func (c *Controller) GetCalResult() {
 	calNo := c.GetString("CalNo")
 	cars, e := service.GetCarsResult(calNo)
-	if e != nil {
+	if e != nil || len(cars) == 0 {
 		c.ReplyErr(errcode.ErrCalResultIsNull)
 		return
 	}
 	goods, e := service.GetGoodsResult(calNo)
-	if e != nil {
+	if e != nil || len(goods) == 0 {
 		c.ReplyErr(errcode.ErrCalResultIsNull)
 		return
 	}

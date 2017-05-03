@@ -79,12 +79,12 @@ func LoadRouter() {
 	beego.Router(UserPrefix+"/doc/file_down", &doc.Controller{}, "GET:FileDownload") //文件下载
 
 	//配载计算模块
-	beego.Router(UserPrefix+"/cal/get_tpl", &cal.Controller{}, "post:GetTplAndFrequentCars")
+	beego.Router(UserPrefix+"/cal/get_tpl", &cal.Controller{}, "*:GetTplAndFrequentCars")
 	beego.Router(UserPrefix+"/cal/store_tpl", &cal.Controller{}, "post:StoreTpl")
 	beego.Router(UserPrefix+"/cal/calculate", &cal.Controller{}, "post:Calculate")
-	beego.Router(UserPrefix+"/cal/get_cal_result", &cal.Controller{}, "post:GetCalResult")
-	beego.Router(UserPrefix+"/cal/get_edited_wbs", &cal.Controller{}, "post:GetEditedWbs")
-	beego.Router(UserPrefix+"/cal/get_cal_history", &cal.Controller{}, "post:GetCalHistory")
+	beego.Router(UserPrefix+"/cal/get_cal_result", &cal.Controller{}, "*:GetCalResult")
+	beego.Router(UserPrefix+"/cal/get_edited_wbs", &cal.Controller{}, "*:GetEditedWbs")
+	beego.Router(UserPrefix+"/cal/get_cal_history", &cal.Controller{}, "*:GetCalHistory")
 
 	// 非登录态列表
 	notNeedAuthList := []string{

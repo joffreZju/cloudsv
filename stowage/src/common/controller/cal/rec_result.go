@@ -59,7 +59,7 @@ func (c *RecController) HandleCalResult() {
 	var err error
 	for i := 0; i < 5; i++ {
 		if err = service.UpdateCalResult(&calResult); err == nil {
-			beego.Error("计算结果写入成功,using_id:", calResult.Using_id, "耗时:", time.Now().Sub(start))
+			beego.Info("计算结果写入成功,using_id:", calResult.Using_id, "耗时:", time.Now().Sub(start))
 			break
 		}
 	}
