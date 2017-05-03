@@ -11,13 +11,19 @@ type Controller struct {
 }
 
 func (c *Controller) OrderInfo() {
-
+	id := c.GetString("order_no")
+	or, err := service.GetOrderByOrderId(id)
+	if err != nil {
+		c.ReplyErr(err)
+		return
+	}
+	c.ReplySucc(or)
 }
 func (c *Controller) OrderDay() {
 
 }
 
-func (c *Controller) ordersCoupon() {
+func (c *Controller) OrdersCoupon() {
 	stp, err := c.GetInt("stp")
 	if err != nil {
 		c.ReplyErr(errcode.ErrParams)

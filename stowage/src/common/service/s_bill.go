@@ -24,6 +24,15 @@ func GetBill(bid int) (bill *model.Bill, err error) {
 	return
 }
 
+func GetUserBillsByType(uid, tp int) (list []*model.Bill, err error) {
+	list, err = model.GetUserBillsByType(uid, tp)
+	if err != nil {
+		beego.Error(err)
+		err = errcode.ErrGetBillFailed
+	}
+	return
+}
+
 func GetBillsByType(page int, limit, tp int) (cn int64, list []*model.Bill, err error) {
 	cn, list, err = model.GetBillsByType(page, limit, tp)
 	if err != nil {

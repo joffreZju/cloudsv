@@ -8,8 +8,8 @@ import (
 
 type Coupon struct {
 	Id           int       `orm:"auto;pk;column(id)" json:"-"`
-	Number       int       `orm:"unique"`   //编码
-	VerifyCode   string    `orm:"size(16)"` //核销码
+	Number       int       `orm:"unique"`            //编码
+	VerifyCode   string    `orm:"size(16)" json:"-"` //核销码
 	Denomination int       //面额
 	Status       int       //0 初始，1 发放，2 回收，3 已使用
 	Agentid      int       `orm:"null" json:",omitempty"` //代理商id

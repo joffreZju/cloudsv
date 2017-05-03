@@ -19,6 +19,7 @@ const (
 //用户在本平台服务消费记录也存此
 type Bill struct {
 	Id          int      `orm:"auto;pk"`
+	BillNo      string   `orm:"unique"`
 	User        *User    `orm:"-" json:",omitempty"`
 	UserId      int      `json:"-"`
 	AccountId   int      `jons:"-"`
@@ -86,6 +87,12 @@ func UpdateBillStatus(bid int) (err error) {
 func GetBillsByUser(id, page int) (list []*Bill, err error) {
 	_, err = orm.NewOrm().QueryTable("Bill").Filter("UserId", id).
 		OrderBy("-Time").Limit(30).Offset(page * 30).All(&list)
+	return
+}
+
+func GetUserBillsByType(uid, tp int) (list []*Bill, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable("Bill").Filter("type", tp).Filter("UserId", uid).All(&list)
 	return
 }
 

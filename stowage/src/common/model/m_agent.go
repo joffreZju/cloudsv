@@ -73,16 +73,16 @@ func GetAgentInfo(uid int) (a *Agent, err error) {
 	return
 }
 
-func GetAgentList(page int) (total int, list []*Agent, err error) {
+func GetAgentList() (list []*Agent, err error) {
 	o := NewOrm(ReadOnly)
-	if page == 0 {
-		var ct int64
-		ct, err = o.QueryTable("agent").Count()
-		if err != nil {
-			return
-		}
-		total = int(ct)
-	}
-	_, err = o.QueryTable("agent").Limit(20).Offset(page * 20).OrderBy("Id").All(&list)
+	//if page == 0 {
+	//	var ct int64
+	//	ct, err = o.QueryTable("agent").Count()
+	//	if err != nil {
+	//		return
+	//	}
+	//	total = int(ct)
+	//}
+	_, err = o.QueryTable("agent").OrderBy("Id").All(&list)
 	return
 }

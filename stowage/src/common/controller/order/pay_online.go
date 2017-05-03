@@ -49,7 +49,10 @@ func (c *Controller) PayOnline() {
 			c.ReplyErr(errcode.ErrWXPay)
 			return
 		}
-		c.ReplySucc(reply.CodeUrl)
+		c.ReplySucc(map[string]interface{}{
+			"url":      reply.CodeUrl,
+			"order_no": or.OrderNo,
+		})
 
 	} else {
 		//ali支付接口
