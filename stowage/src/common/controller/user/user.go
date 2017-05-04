@@ -99,6 +99,7 @@ func (c *Controller) UserRegister() {
 			Userid:    u.Id,
 			UserType:  1,
 			Status:    1,
+			Banlance:  100,
 		}
 		err = service.AccountCreate(&a)
 		if err != nil {
@@ -348,7 +349,7 @@ func (c *Controller) GetCode() {
 
 	//msg := fmt.Sprintf("您好，感谢您使用算配载服务，您的登录验证码是%v，验证码有效期为1分钟。", code)
 	if err = push.SendSmsCodeToMobile(tel, code); err != nil {
-		beego.Debug(err)
+		beego.Error(err)
 		c.ReplyErr(errcode.ErrSendSMSMsgError)
 	} else {
 		c.ReplySucc("发送短信成功")
