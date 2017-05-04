@@ -5,6 +5,7 @@ import sys,psycopg2
 
 def alterTable():
     conn = psycopg2.connect(database="stowage",user="allsum",password="stowage@allsum,./",host="127.0.0.1",port="5432")
+    #conn = psycopg2.connect(database="stowage",user="allsum",password="stowage@allsum,./",host="rm-uf6q1kk0byn74g70zo.pg.rds.aliyuncs.com",port="3432")
     print 'connect successful!'
     cursor=conn.cursor()
     usersql="alter table public.allsum_user alter column password drop default;"
@@ -31,7 +32,6 @@ def alterTable():
     ordersql = '''alter table allsum_order
                     alter column order_no drop default,
                     alter column uid drop default,
-                    alter column create_time drop default,
                     alter column price drop default'''
     billsql = '''alter table bill
                     alter column user_id drop default,
@@ -40,8 +40,8 @@ def alterTable():
                     alter column money drop default'''
     fileTp = '''alter table file
                 add column datax bytea,
-                drop column data,
-                rename column datax to data'''
+                drop column data;
+                alter table file rename column datax to data'''
     cursor.execute(usersql)
     cursor.execute(agentsql)
     cursor.execute(accountsql)
@@ -50,7 +50,7 @@ def alterTable():
     cursor.execute(filesql)
     cursor.execute(ordersql)
     cursor.execute(billsql)
-    #cursor.execute(fileTp)
+    cursor.execute(fileTp)
     
     conn.commit()
     #cursor.close()
