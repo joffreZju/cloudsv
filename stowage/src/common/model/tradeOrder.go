@@ -15,7 +15,7 @@ const (
 	YiPaid                    //支付完成
 	YiPayBack                 //退款
 	YiPayBackFinish           //推款成功
-	YiFailed                  //支付完成
+	YiFailed                  //支付失败
 )
 
 const (

@@ -94,6 +94,16 @@ func (c *Controller) Calculate() {
 
 func (c *Controller) GetCalResult() {
 	calNo := c.GetString("CalNo")
+	cr, e := model.GetCalRecord(calNo)
+	if e != nil {
+		c.ReplyErr(errcode.ErrWrongCalNo)
+		return
+	} else if cr.PayStatus == model.YiFailed {
+		c.ReplyErr(errcode.ErrCalPayFailed)
+		return
+	} else if cr.PayStatus == model.YiOrderCreate {
+		c.ReplyErr(errcode.ErrCalResultIsNull)
+	}
 	cars, e := service.GetCarsResult(calNo)
 	if e != nil || len(cars) == 0 {
 		c.ReplyErr(errcode.ErrCalResultIsNull)

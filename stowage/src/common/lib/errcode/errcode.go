@@ -66,6 +66,8 @@ var (
 	ErrNoTpl           = &CodeError{20170, "模板不存在"}
 	ErrTplIsNull       = &CodeError{20171, "模板字段为空或有误"}
 	ErrCalResultIsNull = &CodeError{20172, "计算结果还未返回"}
+	ErrWrongCalNo      = &CodeError{20173, "计算记录号(CalNo)有误"}
+	ErrCalPayFailed    = &CodeError{20173, "账户余额不足,计算扣费失败"}
 )
 
 func ParseError(err error) (code int, msg string) {
