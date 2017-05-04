@@ -14,16 +14,18 @@ type Controller struct {
 	base.Controller
 }
 
+const CommonErr = 99999
+
 func (c *Controller) GetTplAndFrequentCars() {
 	uid := int(c.UserID)
 	oneTpl, e := model.GetTemplate(uid)
 	if e != nil {
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.ErrNoTpl)
 		return
 	}
 	cars, e := model.GetFrequentCars(uid)
 	if e != nil {
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.ErrNoFrequentCars)
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
@@ -45,7 +47,7 @@ func (c *Controller) StoreTpl() {
 	tpl.Ctt = time.Now()
 	e = model.InsertTemplate(tpl)
 	if e != nil {
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.New(CommonErr, e.Error()))
 		return
 	}
 	c.ReplySucc("success")
@@ -64,19 +66,19 @@ func (c *Controller) Calculate() {
 	e := json.Unmarshal([]byte(carString), &cars)
 	if e != nil {
 		beego.Error(e)
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.ErrWrongJson)
 		return
 	}
 	e = json.Unmarshal([]byte(goodsString), &goods)
 	if e != nil {
 		beego.Error(e)
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.ErrWrongJson)
 		return
 	}
 	cr.CalType, e = c.checkCarsAndGoods(cars, goods)
 	if e != nil {
 		beego.Error(e)
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.ErrWrongCarsGoods)
 		return
 	}
 	splitGoods := c.splitWaybill(goods)
@@ -84,7 +86,7 @@ func (c *Controller) Calculate() {
 	e = service.InsertCalToDbAndSendToMq(uid, cars, splitGoods, cr)
 	if e != nil {
 		beego.Error(e)
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.New(CommonErr, e.Error()))
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
@@ -124,12 +126,12 @@ func (c *Controller) GetEditedWbs() {
 	calNo := c.GetString("CalNo")
 	cars, e := service.GetEditedCars(calNo)
 	if e != nil {
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.New(CommonErr, e.Error()))
 		return
 	}
 	goods, e := service.GetEditedWaybills(calNo)
 	if e != nil {
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.New(CommonErr, e.Error()))
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
@@ -144,7 +146,7 @@ func (c *Controller) GetCalHistory() {
 	pageLimit, _ := c.GetInt("PageLimit")
 	calRecords, maxCount, e := service.GetCalHistory(uid, pageNumber, pageLimit)
 	if e != nil {
-		c.ReplyErr(e)
+		c.ReplyErr(errcode.New(CommonErr, e.Error()))
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
