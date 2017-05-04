@@ -70,6 +70,10 @@ func GetAgentInfo(uid int) (a *Agent, err error) {
 	if err != nil {
 		return nil, err
 	}
+	a.Account, err = GetAccountByUserId(uid)
+    	if err != nil {
+        	return nil, err 
+    	} 
 	return
 }
 
