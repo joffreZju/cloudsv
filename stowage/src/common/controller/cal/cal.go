@@ -21,11 +21,13 @@ func (c *Controller) GetTplAndFrequentCars() {
 	oneTpl, e := model.GetTemplate(uid)
 	if e != nil {
 		c.ReplyErr(errcode.ErrNoTpl)
+		beego.Error(e)
 		return
 	}
 	cars, e := model.GetFrequentCars(uid)
 	if e != nil {
 		c.ReplyErr(errcode.ErrNoFrequentCars)
+		beego.Error(e)
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
@@ -41,6 +43,7 @@ func (c *Controller) StoreTpl() {
 	e := json.Unmarshal([]byte(s), tpl)
 	if e != nil || len(tpl.WaybillNumber) == 0 {
 		c.ReplyErr(errcode.ErrTplIsNull)
+		beego.Error(e)
 		return
 	}
 	tpl.UserId = uid
@@ -48,6 +51,7 @@ func (c *Controller) StoreTpl() {
 	e = model.InsertTemplate(tpl)
 	if e != nil {
 		c.ReplyErr(errcode.New(CommonErr, e.Error()))
+		beego.Error(e)
 		return
 	}
 	c.ReplySucc("success")
@@ -65,28 +69,28 @@ func (c *Controller) Calculate() {
 	}
 	e := json.Unmarshal([]byte(carString), &cars)
 	if e != nil {
-		beego.Error(e)
 		c.ReplyErr(errcode.ErrWrongJson)
+		beego.Error(e)
 		return
 	}
 	e = json.Unmarshal([]byte(goodsString), &goods)
 	if e != nil {
-		beego.Error(e)
 		c.ReplyErr(errcode.ErrWrongJson)
+		beego.Error(e)
 		return
 	}
 	cr.CalType, e = c.checkCarsAndGoods(cars, goods)
 	if e != nil {
-		beego.Error(e)
 		c.ReplyErr(errcode.ErrWrongCarsGoods)
+		beego.Error(e)
 		return
 	}
 	splitGoods := c.splitWaybill(goods)
 	//插入计算数据并发起计算请求，建立账单
 	e = service.InsertCalToDbAndSendToMq(uid, cars, splitGoods, cr)
 	if e != nil {
-		beego.Error(e)
 		c.ReplyErr(errcode.New(CommonErr, e.Error()))
+		beego.Error(e)
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
@@ -99,6 +103,7 @@ func (c *Controller) GetCalResult() {
 	cr, e := model.GetCalRecord(calNo)
 	if e != nil {
 		c.ReplyErr(errcode.ErrWrongCalNo)
+		beego.Error(e)
 		return
 	} else if cr.PayStatus == model.YiFailed {
 		c.ReplyErr(errcode.ErrCalPayFailed)
@@ -109,11 +114,13 @@ func (c *Controller) GetCalResult() {
 	cars, e := service.GetCarsResult(calNo)
 	if e != nil || len(cars) == 0 {
 		c.ReplyErr(errcode.ErrCalResultIsNull)
+		beego.Error(e)
 		return
 	}
 	goods, e := service.GetGoodsResult(calNo)
 	if e != nil || len(goods) == 0 {
 		c.ReplyErr(errcode.ErrCalResultIsNull)
+		beego.Error(e)
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
@@ -127,11 +134,13 @@ func (c *Controller) GetEditedWbs() {
 	cars, e := service.GetEditedCars(calNo)
 	if e != nil {
 		c.ReplyErr(errcode.New(CommonErr, e.Error()))
+		beego.Error(e)
 		return
 	}
 	goods, e := service.GetEditedWaybills(calNo)
 	if e != nil {
 		c.ReplyErr(errcode.New(CommonErr, e.Error()))
+		beego.Error(e)
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
@@ -147,6 +156,7 @@ func (c *Controller) GetCalHistory() {
 	calRecords, maxCount, e := service.GetCalHistory(uid, pageNumber, pageLimit)
 	if e != nil {
 		c.ReplyErr(errcode.New(CommonErr, e.Error()))
+		beego.Error(e)
 		return
 	}
 	c.ReplySucc(map[string]interface{}{
