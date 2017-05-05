@@ -28,6 +28,8 @@ func GetTpl(uid int) (t *model.CalTemplate, err error) {
 	return
 }
 
+const calPrice = 1000
+
 func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.CalGoods, record *model.CalRecord) (err error) {
 	o := orm.NewOrm()
 	o.Begin()
@@ -51,7 +53,7 @@ func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.
 		or := &model.Order{
 			Status:    model.YiOrderCreate,
 			SubType:   model.CStowage,
-			Price:     10,
+			Price:     calPrice,
 			OrderType: model.OrderConsume,
 			Uid:       uid,
 			OrderNo:   GetTradeNO(model.OrderConsume, uid),
@@ -233,10 +235,10 @@ func GetEditedWaybills(calNo string) (goods []*model.CalGoods, err error) {
 }
 
 type CalHistory struct {
-	CalNo      string
-	Ctt          time.Time
-	CalTimes     int
-	StowageRatio float64
+	CalNo    string
+	Ctt      time.Time
+	CalTimes int
+	Money    int64
 }
 
 //获取计算的历史记录
@@ -249,15 +251,26 @@ func GetCalHistory(uid, pageNumber, pageLimit int) (calRecords []*CalHistory, ma
 		return nil, -1, err
 	}
 	//分页查询，按utt降序,计算所有车辆的平均配载率
+	//sql = `select cr.cal_no,
+	//		max(cr.ctt) as ctt,
+	//		max(cr.cal_times) as cal_times,
+	//		avg(car.stowage_ratio) as stowage_ratio
+	//	from cal_record as cr
+	//		inner join car_summary as car
+	//		on car.cal_record_id = cr.id and car.cal_times = cr.cal_times
+	//	where cr.user_id = ? and cr.cal_times = cr.last_result
+	//	group by cr.cal_no
+	//	order by ctt desc
+	//	limit ?
+	//	offset ?`
 	sql = `select cr.cal_no,
-			max(cr.ctt) as ctt,
-			max(cr.cal_times) as cal_times,
-			avg(car.stowage_ratio) as stowage_ratio
+			cr.ctt,
+			cr.cal_times,
+			t2.money
 		from cal_record as cr
-			inner join car_summary as car
-			on car.cal_record_id = cr.id and car.cal_times = cr.cal_times
+			left join bill as t2
+			on cr.order_id = t2.order_id
 		where cr.user_id = ? and cr.cal_times = cr.last_result
-		group by cr.cal_no
 		order by ctt desc
 		limit ?
 		offset ?`

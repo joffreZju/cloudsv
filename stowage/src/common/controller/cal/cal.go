@@ -153,7 +153,7 @@ func (c *Controller) GetCalHistory() {
 	uid := int(c.UserID)
 	pageNumber, _ := c.GetInt("PageNumber")
 	pageLimit, _ := c.GetInt("PageLimit")
-	calRecords, maxCount, e := service.GetCalHistory(uid, pageNumber, pageLimit)
+	calHistory, maxCount, e := service.GetCalHistory(uid, pageNumber, pageLimit)
 	if e != nil {
 		c.ReplyErr(errcode.New(CommonErr, e.Error()))
 		beego.Error(e)
@@ -161,6 +161,6 @@ func (c *Controller) GetCalHistory() {
 	}
 	c.ReplySucc(map[string]interface{}{
 		"MaxCount": maxCount,
-		"Result":   calRecords,
+		"Result":   calHistory,
 	})
 }
