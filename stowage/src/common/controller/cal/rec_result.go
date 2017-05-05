@@ -74,15 +74,19 @@ func (c *RecController) HandleCalResult() {
 		return
 	}
 	//扣费
-	err = model.TransFinance(cr.OrderId)
-	if err != nil {
-		beego.Error(err)
-		cr.PayStatus = model.YiFailed
-	} else {
-		cr.PayStatus = model.YiPaid
-	}
-	if e := model.UpdateCalRecord(orm.NewOrm(), cr); e != nil {
-		beego.Error(e)
+	if calResult.Cal_times > 1 && cr.PayStatus == model.YiPaid{
 		return
+	}else {
+		err = model.TransFinance(cr.OrderId)
+		if err != nil {
+			beego.Error(err)
+			cr.PayStatus = model.YiFailed
+		} else {
+			cr.PayStatus = model.YiPaid
+		}
+		if e := model.UpdateCalRecord(orm.NewOrm(), cr); e != nil {
+			beego.Error(e)
+			return
+		}
 	}
 }
