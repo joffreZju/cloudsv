@@ -42,13 +42,15 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	}
 	or := new(model.Order)
 	or.Status = int(model.YiOrderCreate)
-	or.ProcessStatus = model.OrderWaitProcess
+	//or.ProcessStatus = model.OrderWaitProcess
 	or.SubType = model.PCoupon
 	or.CouponId = r.Id
 	or.OrderNo = util.GetTradeNo(model.PCoupon, uid)
 	or.Price = int64(DefaultPrice)
 	or.OrderType = model.OrderTopup
 	or.Uid = uid
+	or.Desc = "代金券充值"
+	or.Time = time.Now().Format(model.TimeFormat)
 	if agent != nil {
 		or.AgentSharing = or.Price * int64(agent.Discount) / 100
 		or.Agent = agent
