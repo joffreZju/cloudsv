@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"common/lib/errcode"
+
 	"github.com/astaxie/beego/orm"
 )
 
@@ -42,6 +43,7 @@ func TransCouponUsing(or *Order, co *Coupon, ag *Agent) (err error) {
 	b.Order = or
 	b.BillNo = getBillNo(or.OrderNo)
 	b.Type = or.OrderType
+	b.SubType = or.SubType
 	b.UserId = or.Uid
 	b.AccountId = a.Id
 	_, err = o.Insert(b)
@@ -133,6 +135,7 @@ func TransFinance(orderId int) (err error) {
 	b.Type = or.OrderType
 	b.Time = time.Now().Format(TimeFormat)
 	b.UserId = or.Uid
+	b.SubType = or.SubType
 	b.AccountId = a.Id
 	_, err = o.Insert(b)
 	if err != nil {
@@ -146,12 +149,6 @@ func TransFinance(orderId int) (err error) {
 		o.Rollback()
 		return
 	}
-	//和上面代码重复，表名写错
-	//_, err = o.QueryTable("Order").Filter("Id", orderId).Update(orm.Params{"Status": YiPaid})
-	//if err != nil {
-	//	o.Rollback()
-	//	return
-	//}
 
 	if or.OrderType == OrderTopup {
 		a.Banlance = a.Banlance + b.Money
