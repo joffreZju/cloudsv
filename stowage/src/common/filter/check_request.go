@@ -136,16 +136,20 @@ func RequestFilter() beego.FilterFunc {
 		if strings.Index(ctx.Request.URL.Path, "file_add") >= 0 {
 			return
 		}
+		beego.Info("reqeust url:",ctx.Input.URI()) //for test
 		params := make(map[string]interface{})
 		body, _ := ioutil.ReadAll(ctx.Request.Body)
+		beego.Info("request body string:", body) //for test
 		ctx.Request.Body.Close()
 		json.Unmarshal(body, &params)
 
 		if ctx.Request.Method == "POST" {
+			beego.Info("post request postform data:", ctx.Request.PostForm) //for test
 			for k := range ctx.Request.PostForm {
 				params[k] = ctx.Request.PostForm[k][0]
 			}
 		} else {
+			beego.Info("get request form data:", ctx.Request.Form) //for test
 			for k := range ctx.Request.Form {
 				params[k] = ctx.Request.Form[k][0]
 			}
@@ -160,6 +164,8 @@ func RequestFilter() beego.FilterFunc {
 			}
 		}
 		//ctx.Request.Form.Add("body",string(body))
-		beego.Debug("request params:", params)
+		beego.Info("request params:", params)
+		bbb, _ := json.Marshal(params)
+		beego.Info("request all params json string:", string(bbb)) //for test
 	}
 }
