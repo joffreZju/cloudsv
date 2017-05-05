@@ -33,10 +33,10 @@ func InsertCalToDbAndSendToMq(uid int, cars []*model.CarSummary, goods []*model.
 	o.Begin()
 	calType := record.CalType
 	if recordInDb, e := model.GetCalRecord(record.CalNo); e == nil {
+		record = recordInDb
 		if time.Now().Sub(record.Ctt).Hours() >= 48 {
 			return errors.New("重复计算时间已超过48小时")
 		}
-		record = recordInDb
 		record.CalType = calType
 		record.CalTimes += 1
 		record.Ltt = time.Now()
@@ -233,7 +233,7 @@ func GetEditedWaybills(calNo string) (goods []*model.CalGoods, err error) {
 }
 
 type CalHistory struct {
-	OrderNo      string
+	CalNo      string
 	Ctt          time.Time
 	CalTimes     int
 	StowageRatio float64
