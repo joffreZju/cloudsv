@@ -48,14 +48,21 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 	or.OrderNo = util.GetTradeNo(model.PCoupon, uid)
 	or.Price = int64(DefaultPrice)
 	or.OrderType = model.OrderTopup
-	or.Uid=uid
+	or.Uid = uid
 	if agent != nil {
 		or.AgentSharing = or.Price * int64(agent.Discount) / 100
 		or.Agent = agent
 	}
+	err = model.CreateOrder(or)
+	if err != nil {
+		beego.Error(err)
+		err = errcode.ErrCreateOrderFailed
+		return
+	}
+
 	err = model.TransCouponUsing(or, r, agent)
 	if err != nil {
-		beego.Error("trans coupon using:",err)
+		beego.Error("trans coupon using:", err)
 		return
 	}
 	return
@@ -133,7 +140,7 @@ func UsingCoupon(num int, uid int, code string) (err error) {
 }*/
 
 func AddCoupons(start, end int) (err error) {
-	caps := end - start +1 
+	caps := end - start + 1
 	if caps < 1 || start < LeastNumber {
 		return fmt.Errorf("coupon range wrong:%d:%d", start, end)
 	}
