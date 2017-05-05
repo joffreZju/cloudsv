@@ -134,6 +134,7 @@ func TransFinance(orderId int) (err error) {
 	b.Order = &or
 	b.Type = or.OrderType
 	b.Time = time.Now().Format(TimeFormat)
+	b.BillNo = getBillNo(or.OrderNo)
 	b.UserId = or.Uid
 	b.SubType = or.SubType
 	b.AccountId = a.Id
