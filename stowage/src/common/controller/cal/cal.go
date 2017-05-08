@@ -100,6 +100,7 @@ func (c *Controller) Calculate() {
 
 func (c *Controller) GetCalResult() {
 	calNo := c.GetString("CalNo")
+	uid := int(c.UserID)
 	cr, e := model.GetCalRecord(calNo)
 	if e != nil {
 		c.ReplyErr(errcode.ErrWrongCalNo)
@@ -110,6 +111,10 @@ func (c *Controller) GetCalResult() {
 		return
 	} else if cr.PayStatus == model.YiOrderCreate {
 		c.ReplyErr(errcode.ErrCalResultIsNull)
+		return
+	} else if cr.UserId != uid {
+		c.ReplyErr(errcode.ErrCalNoUserNoMatch)
+		return
 	}
 	cars, e := service.GetCarsResult(calNo)
 	if e != nil || len(cars) == 0 {
@@ -129,8 +134,69 @@ func (c *Controller) GetCalResult() {
 	})
 }
 
+func (c *Controller) GetCalResultExcel() {
+	calNo := c.GetString("CalNo")
+	uid := int(c.UserID)
+	cr, e := model.GetCalRecord(calNo)
+	if e != nil {
+		c.ReplyErr(errcode.ErrWrongCalNo)
+		beego.Error(e)
+		return
+	} else if cr.PayStatus == model.YiFailed {
+		c.ReplyErr(errcode.ErrCalPayFailed)
+		return
+	} else if cr.PayStatus == model.YiOrderCreate {
+		c.ReplyErr(errcode.ErrCalResultIsNull)
+	} else if cr.UserId != uid {
+		c.ReplyErr(errcode.ErrCalNoUserNoMatch)
+		return
+	}
+	cars, e := service.GetCarsResult(calNo)
+	if e != nil || len(cars) == 0 {
+		c.ReplyErr(errcode.ErrCalResultIsNull)
+		beego.Error(e)
+		return
+	}
+	goods, e := service.GetGoodsResult(calNo)
+	if e != nil || len(goods) == 0 {
+		c.ReplyErr(errcode.ErrCalResultIsNull)
+		beego.Error(e)
+		return
+	}
+	databyte, e := service.GetWbResultExcil(goods, cars)
+	if e != nil {
+		c.ReplyErr(errcode.ErrCalResultIsNull)
+		beego.Error(e)
+		return
+	}
+	//c.replyFileStream(calNo+".xlsx", databyte)
+	c.ReplyFile("application/octet-stream", calNo+".xlsx", databyte)
+
+}
+
+//func (c *Controller) replyFileStream(name string, data []byte) {
+//	c.Ctx.Output.Header("Content-Disposition", "attachment; filename="+name)
+//	c.Ctx.Output.Header("Content-Description", "File Transfer")
+//	c.Ctx.Output.Header("Content-Type", "application/octet-stream")
+//	c.Ctx.Output.Header("Content-Transfer-Encoding", "binary")
+//	c.Ctx.Output.Header("Expires", "0")
+//	c.Ctx.Output.Header("Cache-Control", "must-revalidate")
+//	c.Ctx.Output.Header("Pragma", "public")
+//	c.Ctx.Output.Body(data)
+//}
+
 func (c *Controller) GetEditedWbs() {
 	calNo := c.GetString("CalNo")
+	uid := int(c.UserID)
+	cr, e := model.GetCalRecord(calNo)
+	if e != nil {
+		c.ReplyErr(errcode.ErrWrongCalNo)
+		beego.Error(e)
+		return
+	} else if cr.UserId != uid {
+		c.ReplyErr(errcode.ErrCalNoUserNoMatch)
+		return
+	}
 	cars, e := service.GetEditedCars(calNo)
 	if e != nil {
 		c.ReplyErr(errcode.New(CommonErr, e.Error()))

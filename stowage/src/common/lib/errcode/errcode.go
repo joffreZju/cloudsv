@@ -63,14 +63,15 @@ var (
 	ErrCouponIllegal  = &CodeError{20159, "非法券"}
 	ErrCouponNotExist = &CodeError{20160, "券不存在"}
 
-	ErrNoTpl           = &CodeError{20170, "暂无匹配模板"}
-	ErrTplIsNull       = &CodeError{20171, "模板字段为空或有误"}
-	ErrCalResultIsNull = &CodeError{20172, "计算结果还未返回"}
-	ErrWrongCalNo      = &CodeError{20173, "计算记录号(CalNo)有误"}
-	ErrCalPayFailed    = &CodeError{20173, "账户余额不足,计算扣费失败"}
-	ErrNoFrequentCars  = &CodeError{20174, "暂无最近使用车辆"}
-	ErrWrongJson       = &CodeError{20175, "cars,goods json格式有误"}
-	ErrWrongCarsGoods  = &CodeError{20176, "计算数据有误"}
+	ErrNoTpl            = &CodeError{20170, "暂无匹配模板"}
+	ErrTplIsNull        = &CodeError{20171, "模板字段为空或有误"}
+	ErrCalResultIsNull  = &CodeError{20172, "计算结果还未返回"}
+	ErrWrongCalNo       = &CodeError{20173, "计算记录号(CalNo)有误"}
+	ErrCalPayFailed     = &CodeError{20173, "账户余额不足,计算扣费失败"}
+	ErrNoFrequentCars   = &CodeError{20174, "暂无最近使用车辆"}
+	ErrWrongJson        = &CodeError{20175, "cars,goods json格式有误"}
+	ErrWrongCarsGoods   = &CodeError{20176, "计算数据有误"}
+	ErrCalNoUserNoMatch = &CodeError{20177, "CalNo和用户不匹配"}
 )
 
 func ParseError(err error) (code int, msg string) {
