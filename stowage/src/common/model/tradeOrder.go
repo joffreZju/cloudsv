@@ -89,6 +89,20 @@ func (o *Order) UpdateProcessStatus() {
 
 }
 
+func GetOrderTypeIncomplete(page, limit, tp int) (ct int64, list []*Order, err error) {
+	o := orm.NewOrm()
+	if page == 0 {
+		ct, err = o.QueryTable("allsum_order").Filter("Type", tp).Filter("Status_lt", YiPaid).Count()
+		if err != nil {
+			return
+		}
+	}
+	_, err = o.QueryTable("allsum_order").Filter("Type", tp).Filter("Status_lt", YiPaid).
+		OrderBy("-Id").Limit(limit).Offset(page * limit).All(&list)
+	return
+
+}
+
 func GetPaidOrdersStp(page, limit, stp int) (ct int64, list []*Order, err error) {
 	o := orm.NewOrm()
 	if page == 0 {

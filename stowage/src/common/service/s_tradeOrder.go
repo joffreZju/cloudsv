@@ -59,6 +59,14 @@ func GetOrdersSubtp(page, limit, stp int) (ct int64, list []*model.Order, err er
 	return
 }
 
+func GetOrdersIncomplete(page, limit, tp int) (ct int64, list []*model.Order, err error) {
+	ct, list, err = model.GetOrderTypeIncomplete(page, limit, tp)
+	if err != nil {
+		beego.Error(err)
+	}
+	return
+}
+
 func GetOrderMoreDetail(order *model.Order, fields ...string) (err error) {
 	newFields := []string{}
 	for _, f := range fields {
