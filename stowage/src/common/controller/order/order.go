@@ -23,7 +23,7 @@ func (c *Controller) OrderDay() {
 
 }
 
-func (c *Controller) OrderList() {
+func (c *Controller) OrderListIncomplete() {
 	tp, err := c.GetInt("tp")
 	if err != nil {
 		c.ReplyErr(errcode.ErrParams)
