@@ -60,7 +60,7 @@ type Order struct {
 	PaidBankType string  `orm:"null" json:",omitempty"` // 银行卡类型, 微信支付有
 	OrderType    int     `json:",omitempty"`            //1.充值2.消费
 	SubType      int     `json:",omitempty"`            //支付方式+消费商品
-	Time         string  `json:"-"`                     // 下单时间
+	Time         string  		                     // 下单时间
 	User         *User   `orm:"-" json:",omitempty"`
 	Uid          int     `json:"-"`
 	Bill         *Bill   `orm:"reverse(one);column(bill_id)" json:",omitempty"`
