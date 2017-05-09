@@ -32,11 +32,11 @@ func Init() (err error) {
 
 //define sms template code
 const (
-	ALI_ACCESS_KEY_ID       string = "LTAIwxFn7egYfvra"
-	ALI_ACCESS_KEY_SECRET   string = "nBfpqo4StRZv9JreRsLQpFaZKKUT1h"
-	SMS_SIGN_NAME                  = "壹算科技"
-	SMS_TEMPLATE_WEB               = "SMS_58265055"
-	SMS_TEMPLATE_WHEN_ERROR        = "SMS_63875806"
+	ALI_ACCESS_KEY_ID       = "LTAIysfw9MWnCZFk"
+	ALI_ACCESS_KEY_SECRET   = "hAuLM27EkdVVxtfvbYHgq5XPDRvial"
+	SMS_SIGN_NAME           = "壹算科技"
+	SMS_TEMPLATE_WEB        = "SMS_58265055"
+	SMS_TEMPLATE_WHEN_ERROR = "SMS_63875806"
 )
 
 func SendSmsCodeToMobile(mobile, code string) error {

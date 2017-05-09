@@ -19,8 +19,8 @@ var (
 	//MQ_TOPIC_CONSUMER            = beego.AppConfig.String("MQ_TOPIC_CONSUMER")
 	//MQ_PRODUCER_ID               = beego.AppConfig.String("MQ_PRODUCER_ID")
 	//MQ_CONSUMER_ID               = beego.AppConfig.String("MQ_CONSUMER_ID")
-	ALI_ACCESS_KEY_ID     string = "LTAIwxFn7egYfvra"
-	ALI_ACCESS_KEY_SECRET string = "nBfpqo4StRZv9JreRsLQpFaZKKUT1h"
+	ALI_ACCESS_KEY_ID     string = "LTAIysfw9MWnCZFk"
+	ALI_ACCESS_KEY_SECRET string = "hAuLM27EkdVVxtfvbYHgq5XPDRvial"
 )
 
 //producer And consumer use MqSign
