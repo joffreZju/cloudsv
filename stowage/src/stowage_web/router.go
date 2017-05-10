@@ -95,7 +95,7 @@ func LoadRouter() {
 		"/",
 		// user
 		ExemptPrefix + "/user/getcode", ExemptPrefix + "/user/register", ExemptPrefix + "/user/login",
-		UserPrefix + "/doc/file_down", UserPrefix + "/cal/get_cal_result_excel",
+		UserPrefix + "/doc/file_down", 
 	}
 
 	// add filter
