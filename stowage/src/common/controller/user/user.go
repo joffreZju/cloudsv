@@ -22,7 +22,7 @@ type Controller struct {
 	base.Controller
 }
 
-var AllsumUserList = []string{"15158134537", "15558085697"}
+var AllsumUserList = []string{"15158134537", "15558085697", "18867543358", "18694582678", "18667907711", "13735544671", "15301107268"}
 
 func getGroup(tel string) int {
 	for _, v := range AllsumUserList {
