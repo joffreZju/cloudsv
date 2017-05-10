@@ -45,7 +45,7 @@ func (c *Controller) GetBillsType() {
 		return
 	}
 
-	limit := 30
+	limit := 20
 	page, _ := c.GetInt("page")
 	ct, list, err := service.GetBillsByType(page, limit, tp)
 	if err != nil {
