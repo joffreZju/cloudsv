@@ -99,7 +99,7 @@ func (c *Controller) UserRegister() {
 			Userid:    u.Id,
 			UserType:  1,
 			Status:    1,
-			Banlance:  100,
+			Banlance:  20000,
 		}
 		err = service.AccountCreate(&a)
 		if err != nil {

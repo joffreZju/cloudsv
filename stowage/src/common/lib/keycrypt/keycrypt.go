@@ -94,7 +94,7 @@ func Decode(keyStr, ciphertextStr string) (plaintextStr string, err error) {
 	return
 }
 
-const salt string = "suanpeizai#@'hangzhou"
+const salt string = "suanpeizai"
 
 func Sha256Cal(src string) string {
 	h := sha256.New()

@@ -72,6 +72,7 @@ func InitLog() (err error) {
 	filter.LoadLogFilter()
 	typ := beego.AppConfig.String("log::type")
 	cons := beego.AppConfig.String("log::params")
+	beego.SetLogFuncCall(true)
 	return beego.SetLogger(typ, cons)
 }
 
