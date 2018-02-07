@@ -10,6 +10,7 @@ GoInstall() {
     	#golint src/$1
 	timestamp=`date +%Y-%m-%dT%H:%M:%S` 
 	appname=`echo $1|awk -F '/' '{print $NF}'`
+	appname=${appname}".exe"
 	gitversion=`git log -n 1|grep commit | awk -F ' ' '{print $2}'`
 	go build -ldflags "-X main.Version=${timestamp}_${gitversion} -X common/lib/deamon.Version=${timestamp}_${gitversion}" -o "$PWD/bin/$appname" $1
 	#go install -ldflags "-X main.Version=${timestamp}_${gitversion} -X common/lib/deamon.Version=${timestamp}_${gitversion}" $1
@@ -37,3 +38,5 @@ do
 done
 
 export GOPATH=$oldGOPATH
+
+bin/stowage_web.exe -c conf/stowage_web.conf
